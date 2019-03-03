@@ -1709,11 +1709,8 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
             (let* ((copy-group-tabs (copy-list current-group-tabs))
                    (previous-tab (nth previous-buffer-index copy-group-tabs))
                    (current-tab (nth current-buffer-index copy-group-tabs))
-                   (base-group-tabs (awesome-tab-remove-nth-element previous-buffer-index copy-group-tabs))
-                   (new-group-tabs
-                    (if (> current-buffer-index previous-buffer-index)
-                        (awesome-tab-insert-before base-group-tabs current-tab previous-tab)
-                      (awesome-tab-insert-after base-group-tabs current-tab previous-tab))))
+                   (base-group-tabs (awesome-tab-remove-nth-element current-buffer-index copy-group-tabs))
+                   (new-group-tabs (awesome-tab-insert-after base-group-tabs previous-tab current-tab)))
               (set bufset new-group-tabs)
               (awesome-tab-set-template bufset nil)
               (awesome-tab-display-update)
