@@ -182,6 +182,11 @@ The following scopes are possible:
                  (const :tag "Tab Groups Only" groups)
                  (const :tag "Visible Tabs then Tab Groups" nil)))
 
+(defcustom awesome-tab-cycle-wrap nil
+  "*Non-nil means to enable wrapped move in cyclic navigation through tabs."
+  :group 'awesome-tab
+  :type 'boolean)
+
 (defcustom awesome-tab-auto-scroll-flag t
   "*Non-nil means to automatically scroll the tab bar.
 That is, when a tab is selected outside of the tab bar visible area,
@@ -532,7 +537,13 @@ TAB.  Return the tab found, or nil otherwise."
     (while (and tabs (not (eq tab (car tabs))))
       (setq last (car tabs)
             tabs (cdr tabs)))
-    (and tabs (if before last (nth 1 tabs)))))
+    (and tabs (if before
+                  (or last
+                      (and awesome-tab-cycle-wrap
+                           (car (last tabs))))
+                (or (nth 1 tabs)
+                    (and awesome-tab-cycle-wrap
+                         (car (awesome-tab-tabs tabset))))))))
 
 (defun awesome-tab-current-tabset (&optional update)
   "Return the tab set currently displayed on the tab bar.
@@ -1538,7 +1549,8 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
   (awesome-tab-backward-tab-other-window t))
 
 (defun awesome-tab-move-current-tab-to-right ()
-  "Move current tab one place right, unless it's already the rightmost."
+  "Move current tab one place right.
+If `awesome-tab-cycle-wrap' is t, the rightmost tab will be swapped with the leftmost one."
   (interactive)
   (let* ((bufset (awesome-tab-current-tabset t))
          (old-bufs (awesome-tab-tabs bufset))
@@ -1554,8 +1566,15 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
           (setq the-buffer (car old-bufs))
           (setq old-bufs (cdr old-bufs))
           (if old-bufs ; if this is false, then the current tab is the rightmost
-              (push (car old-bufs) new-bufs))
-          (push the-buffer new-bufs)) ; this is the tab that was to be moved
+	      (progn
+		(push (car old-bufs) new-bufs)
+		(push the-buffer new-bufs))
+	    (if awesome-tab-cycle-wrap
+		(let ((cell (last new-bufs)))
+		  (setq old-bufs (list nil (car cell)))
+		  (setcar cell the-buffer))
+	      (push the-buffer new-bufs)))
+          ) ; this is the tab that was to be moved
       (error "Error: current buffer's name was not found in Awesome-Tab's buffer list."))
     (setq new-bufs (reverse new-bufs))
     (setq new-bufs (append new-bufs (cdr old-bufs)))
@@ -1564,15 +1583,20 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
     (awesome-tab-display-update)))
 
 (defun awesome-tab-move-current-tab-to-left ()
-  "Move current tab one place left, unless it's already the leftmost."
+  "Move current tab one place left.
+If `awesome-tab-cycle-wrap' is t, the leftmost tab will be swapped with the rightmost one."
   (interactive)
   (let* ((bufset (awesome-tab-current-tabset t))
          (old-bufs (awesome-tab-tabs bufset))
-         (first-buf (car old-bufs))
+         (not-yet-this-buf (car old-bufs))
          (new-bufs (list)))
-    (if (string= (buffer-name) (format "%s" (car first-buf)))
-        old-bufs                     ; the current tab is the leftmost
-      (setq not-yet-this-buf first-buf)
+    (if (string= (buffer-name) (format "%s" (car not-yet-this-buf)))
+	;; the current tab is the leftmost
+	(if awesome-tab-cycle-wrap
+	    (setq new-bufs (append (last old-bufs)
+				   (butlast (cdr old-bufs))
+				   (list not-yet-this-buf)))
+	  (setq new-bufs old-bufs))
       (setq old-bufs (cdr old-bufs))
       (while (and
               old-bufs
@@ -1586,10 +1610,10 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
             (push not-yet-this-buf new-bufs)
             (setq new-bufs (reverse new-bufs))
             (setq new-bufs (append new-bufs (cdr old-bufs))))
-        (error "Error: current buffer's name was not found in Awesome-Tab's buffer list."))
-      (set bufset new-bufs)
-      (awesome-tab-set-template bufset nil)
-      (awesome-tab-display-update))))
+        (error "Error: current buffer's name was not found in Awesome-Tab's buffer list.")))
+    (set bufset new-bufs)
+    (awesome-tab-set-template bufset nil)
+    (awesome-tab-display-update)))
 
 (defun awesome-tab-kill-all-buffers-in-current-group ()
   "Kill all buffers in current group."

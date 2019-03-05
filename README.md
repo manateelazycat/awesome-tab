@@ -14,6 +14,7 @@ Table of Contents
         * [HideRules](#hiderules)
         * [GroupRules](#grouprules)
         * [FixedWidth](#fixedwidth)
+        * [WrappedMove](#wrappedmove)
 
 # What is it?
 
@@ -238,3 +239,19 @@ If you'd like all the tab labels using the same length, such as 14, use:
 ```Elisp
 (setq awesome-tab-label-fixed-length 14)
 ```
+
+##### WrappedMove
+
+Use:
+
+```Elisp
+(setq awesome-tab-cycle-wrap t)
+```
+
+to enable wrapped move.
+
+For example, if the current tab at the rightmost, ```awesome-tab-forward-tab```
+will select the leftmost tab, instead of moving to next group;
+```awesome-tab-move-current-tab-to-right``` will swap the rightmost tab with the
+leftmost one.
+
