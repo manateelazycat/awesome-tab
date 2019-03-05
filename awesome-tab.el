@@ -595,7 +595,7 @@ Call `awesome-tab-tab-label-function' to obtain a label for TAB."
            'pointer 'hand)
           ))
 
-(defun awesome-tab-line-format (tabset)
+(defun awesome-tab-line-format (tabset &optional len)
   "Return the `header-line-format' value to display TABSET."
   (let* ((sel (awesome-tab-selected-tab tabset))
          (tabs (awesome-tab-view tabset))
@@ -628,7 +628,8 @@ Call `awesome-tab-tab-label-function' to obtain a label for TAB."
                         (goto-char (point-max))
                         (apply 'insert elts)
                         (goto-char (point-min))
-                        (> (vertical-motion 1) 0)))
+                        (or (> (vertical-motion 1) 0)
+                            (and len (> (point-max) len)))))
             (awesome-tab-scroll tabset 1)
             (setq elts (cdr elts)))))
       (setq elts (nreverse elts))
@@ -647,7 +648,7 @@ Call `awesome-tab-tab-label-function' to obtain a label for TAB."
                        'pointer 'arrow)))
     ))
 
-(defun awesome-tab-line ()
+(defun awesome-tab-line (&optional len)
   "Return the header line templates that represent the tab bar.
 Inhibit display of the tab bar in current window `awesome-tab-hide-tab-function' return nil."
   (cond
@@ -657,7 +658,7 @@ Inhibit display of the tab bar in current window `awesome-tab-hide-tab-function'
    ((awesome-tab-current-tabset t)
     ;; When available, use a cached tab bar value, else recompute it.
     (or (awesome-tab-template awesome-tab-current-tabset)
-        (awesome-tab-line-format awesome-tab-current-tabset)))))
+        (awesome-tab-line-format awesome-tab-current-tabset len)))))
 
 (defconst awesome-tab-header-line-format '(:eval (awesome-tab-line))
   "The tab bar header line format.")
