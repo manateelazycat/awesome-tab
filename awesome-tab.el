@@ -1850,6 +1850,31 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
 
 (add-hook 'post-command-hook awesome-tab-adjust-buffer-order-function)
 
+;;; Awesome-Tab integration
+;;
+
+(defun awesome-tab-format-merge (left right-ratio)
+  (let* ((w (- (window-total-width)
+               (if (and window-system (eq 'right (get-scroll-bar-mode)))
+                   3 0)))
+         (right-len (truncate (* w right-ratio)))
+         (left-len (- w right-len 1)))
+    (if (< right-len 30)
+        ;; too small, tabbar only
+        (awesome-tab-line)
+      (list
+       (awesome-tab-truncate-string left-len left)
+       (propertize " " 'display `((space :align-to (- (+ right right-fringe right-margin) ,(* w right-ratio)))))
+       (awesome-tab-line right-len)))))
+
+(defun awesome-tab-ad-semantic-stickyfunc (orig-fun &rest args)
+  (if awesome-tab-mode
+      (awesome-tab-format-merge (apply orig-fun args) 0.618)
+    (apply orig-fun args)))
+
+(defun awesome-tab-active-semantic-stickyfunc()
+  (advice-add 'semantic-stickyfunc-fetch-stickyline :around #'awesome-tab-ad-semantic-stickyfunc))
+
 (provide 'awesome-tab)
 
 ;;; awesome-tab.el ends here
