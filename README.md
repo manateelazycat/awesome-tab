@@ -14,6 +14,7 @@ Table of Contents
         * [HideRules](#hiderules)
         * [GroupRules](#grouprules)
         * [FixedWidth](#fixedwidth)
+        * [DisplayFunctionName](#displayfunctionname)
 
 # What is it?
 
@@ -248,3 +249,12 @@ If you'd like all the tab labels using the same length, such as 14, use:
 ```Elisp
 (setq awesome-tab-label-fixed-length 14)
 ```
+
+##### DisplayFunctionName
+If the implementation of the function where the cursor is located is longer than the screen,
+it is difficult to know what the current function.
+
+You can set variable ```awesome-tab-display-sticky-function-name``` with t,
+then function name will display in current tab.
+
+Default this feature is disable.
