@@ -9,6 +9,7 @@ Table of Contents
      * [Usage](#usage)
      * [Plugins](#plugins)
      * [Customize](#customize)
+        * [Icon](#icon)
         * [Theme](#theme)
         * [TabStyle](#tabstyle)
         * [HideRules](#hiderules)
@@ -101,13 +102,17 @@ Ivy fans can use ```awesome-tab-build-ivy-source```
 
 ### Customize
 
+#### Icon
+If you have install [AllTheIcons](https://github.com/domtronn/all-the-icons.el) successfully.
+AwesomeTab will render file icon in tab automatically.
+
 #### Theme
 
-| Option                  | Description                |
-| :--------               | :----                      |
+| Option                       | Description                     |
+| :--------                    | :----                           |
 | awesome-tab-background-color | Background color of awesome-tab |
-| awesome-tab-selected     | Active tab color           |
-| awesome-tab-unselected   | Inactive tab color         |
+| awesome-tab-selected         | Active tab color                |
+| awesome-tab-unselected       | Inactive tab color              |
 
 #### TabStyle
 Default tab style is "wave", you can customize option ```awesome-tab-style``` follow your preferences, below are the different tab style screenshots:
