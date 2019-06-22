@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 3.3
-;; Last-Updated: 2019-04-14 10:02:41
+;; Version: 3.4
+;; Last-Updated: 2019-06-23 07:22:06
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -86,6 +86,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/06/23
+;;      * Render file icon in tab when `all-the-icons' is load.
 ;;
 ;; 2019/04/14
 ;;      * Make `awesome-tab-last-sticky-func-name' default with nil.
@@ -1385,19 +1388,26 @@ The memoization cache is frame-local."
 (defun awesome-tab-buffer-tab-label (tab)
   "Return a label for TAB.
 That is, a string used to represent it on the tab bar."
-  ;; Init tab style.
-  (when (or (not awesome-tab-style-left)
-            (not awesome-tab-style-right))
-    (awesome-tab-select-separator-style awesome-tab-style))
-  ;; Render tab.
-  (awesome-tab-render-separator
-   (list awesome-tab-style-left
-         (format " %s "
-                 (let ((bufname (awesome-tab-buffer-name (car tab))))
-                   (if (> awesome-tab-label-fixed-length 0)
-                       (awesome-tab-truncate-string  awesome-tab-label-fixed-length bufname)
-                     bufname)))
-         awesome-tab-style-right)))
+  (let* ((tab-buffer (car tab))
+         (tab-file (buffer-file-name tab-buffer)))
+    ;; Init tab style.
+    (when (or (not awesome-tab-style-left)
+              (not awesome-tab-style-right))
+      (awesome-tab-select-separator-style awesome-tab-style))
+    ;; Render tab.
+    (awesome-tab-render-separator
+     (list awesome-tab-style-left
+           (when (and
+                  (featurep 'all-the-icons)
+                  tab-file
+                  (file-exists-p tab-file))
+             (all-the-icons-icon-for-file tab-file :v-adjust 0.05))
+           (format " %s "
+                   (let ((bufname (awesome-tab-buffer-name tab-buffer)))
+                     (if (> awesome-tab-label-fixed-length 0)
+                         (awesome-tab-truncate-string  awesome-tab-label-fixed-length bufname)
+                       bufname)))
+           awesome-tab-style-right))))
 
 (defun awesome-tab-buffer-name (tab-buffer)
   "Get buffer name of tab.
@@ -1810,8 +1820,8 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
         (when (featurep 'helm)
           (require 'helm)
           (helm-build-sync-source "Awesome-Tab Group"
-            :candidates #'awesome-tab-get-groups
-            :action '(("Switch to group" . awesome-tab-switch-group))))))
+                                  :candidates #'awesome-tab-get-groups
+                                  :action '(("Switch to group" . awesome-tab-switch-group))))))
 
 ;; Ivy source for switching group in ivy.
 (defvar ivy-source-awesome-tab-group nil)
