@@ -1398,6 +1398,8 @@ That is, a string used to represent it on the tab bar."
          awesome-tab-style-right)))
 
 (defun awesome-tab-icon-for-tab (tab)
+  "When tab buffer's file is exists, use `all-the-icons-icon-for-file' to fetch file icon.
+Otherwise use `all-the-icons-icon-for-buffer' to fetch icon for buffer."
   (when (featurep 'all-the-icons)
     (let* ((tab-buffer (car tab))
            (tab-file (buffer-file-name tab-buffer)))
