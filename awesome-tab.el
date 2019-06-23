@@ -266,10 +266,6 @@ This fucntion accepet tab name, tab will hide if this function return ni.")
   "Function called with no argument to obtain the current tab set.
 This is the tab set displayed on the tab bar.")
 
-(defvar awesome-tab-tab-label-function nil
-  "Function that obtains a tab label displayed on the tab bar.
-The function is passed a tab and should return a string.")
-
 (defvar awesome-tab-select-tab-function nil
   "Function that select a tab.
 The function is passed a tab, and should make it the
@@ -563,13 +559,9 @@ current cached copy."
 (defsubst awesome-tab-line-tab (tab)
   "Return the display representation of tab TAB.
 That is, a propertized string used as an `header-line-format' template
-element.
-Call `awesome-tab-tab-label-function' to obtain a label for TAB."
+element."
   (concat (propertize
-           (if awesome-tab-tab-label-function
-               (funcall awesome-tab-tab-label-function tab)
-             tab)
-           'awesome-tab-tab tab
+           (awesome-tab-buffer-tab-label tab)
            'face (if (awesome-tab-selected-p tab (awesome-tab-current-tabset))
                      'awesome-tab-selected
                    'awesome-tab-unselected)
@@ -1504,7 +1496,6 @@ Run as `awesome-tab-init-hook'."
   (setq awesome-tab--buffers nil
         awesome-tab--buffer-show-groups nil
         awesome-tab-current-tabset-function 'awesome-tab-buffer-tabs
-        awesome-tab-tab-label-function 'awesome-tab-buffer-tab-label
         awesome-tab-select-tab-function 'awesome-tab-buffer-select-tab
         )
   (add-hook 'kill-buffer-hook 'awesome-tab-buffer-track-killed))
@@ -1515,7 +1506,6 @@ Run as `awesome-tab-quit-hook'."
   (setq awesome-tab--buffers nil
         awesome-tab--buffer-show-groups nil
         awesome-tab-current-tabset-function nil
-        awesome-tab-tab-label-function nil
         awesome-tab-select-tab-function nil
         )
   (remove-hook 'kill-buffer-hook 'awesome-tab-buffer-track-killed))
