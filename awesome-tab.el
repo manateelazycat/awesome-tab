@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 3.6
-;; Last-Updated: 2019-06-23 17:56:35
+;; Version: 3.7
+;; Last-Updated: 2019-06-23 18:42:03
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -79,7 +79,6 @@
 
 ;;; Customize:
 ;;
-;; `awesome-tab-background-color'
 ;; `awesome-tab-selected'
 ;; `awesome-tab-unselected'
 ;; `awesome-tab-label-fixed-length'
@@ -91,6 +90,7 @@
 ;;      * Render file icon in tab when `all-the-icons' is load.
 ;;      * Use `all-the-icons-icon-for-buffer' to display icon for dired mode.
 ;;      * Support color icon.
+;;      * Don't customize background of tab, use `default' face's background as tab background.
 ;;
 ;; 2019/04/14
 ;;      * Make `awesome-tab-last-sticky-func-name' default with nil.
@@ -234,14 +234,6 @@ the group name uses the name of this variable."
 Feel free to add hook in this option. ;)"
   :type '(repeat symbol)
   :group 'awesome-tab)
-
-(defcustom awesome-tab-background-color "black"
-  "*Background color of the tab bar.
-By default, use the background color specified for the
-`awesome-tab-default' face (or inherited from another face), or the
-background color of the `default' face otherwise."
-  :group 'awesome-tab
-  :type 'face)
 
 (defcustom awesome-tab-height 22
   "The height of tab."
@@ -538,12 +530,6 @@ current cached copy."
 
 ;;; Faces
 ;;
-(defface awesome-tab-default
-  '((t
-     (:background "black" :foreground "black")))
-  "Default face used in the tab bar."
-  :group 'awesome-tab)
-
 (defface awesome-tab-unselected
   '((t
      (:background "#3D3C3D" :foreground "grey50")))
@@ -552,16 +538,6 @@ current cached copy."
 
 (defface awesome-tab-selected
   '((t (:background "#31343E" :foreground "white")))
-  "Face used for the selected tab."
-  :group 'awesome-tab)
-
-(defface awesome-tab-icon-unselected-background
-  '((t (:background "#3D3C3D")))
-  "Face used for the selected tab."
-  :group 'awesome-tab)
-
-(defface awesome-tab-icon-selected-background
-  '((t (:background "#31343E")))
   "Face used for the selected tab."
   :group 'awesome-tab)
 
@@ -576,7 +552,7 @@ current cached copy."
   "Return the `header-line-format' value to display TABSET."
   (let* ((sel (awesome-tab-selected-tab tabset))
          (tabs (awesome-tab-view tabset))
-         (padcolor awesome-tab-background-color)
+         (padcolor (face-background 'default))
          atsel elts)
     ;; Track the selected tab to ensure it is always visible.
     (when awesome-tab--track-selected
@@ -1365,8 +1341,8 @@ The memoization cache is frame-local."
 (defvar awesome-tab-style-right nil)
 
 (defun awesome-tab-select-separator-style (tab-style)
-  (setq awesome-tab-style-left (funcall (intern (format "powerline-%s-right" tab-style)) 'awesome-tab-default nil awesome-tab-height))
-  (setq awesome-tab-style-right (funcall (intern (format "powerline-%s-left" tab-style)) nil 'awesome-tab-default awesome-tab-height)))
+  (setq awesome-tab-style-left (funcall (intern (format "powerline-%s-right" tab-style)) 'default nil awesome-tab-height))
+  (setq awesome-tab-style-right (funcall (intern (format "powerline-%s-left" tab-style)) nil 'default awesome-tab-height)))
 
 (defsubst awesome-tab-line-tab (tab)
   "Return the display representation of tab TAB.
@@ -1387,13 +1363,12 @@ That is, a string used to represent it on the tab bar."
             (not awesome-tab-style-right))
     (awesome-tab-select-separator-style awesome-tab-style))
   (let* ((is-active-tab (awesome-tab-selected-p tab (awesome-tab-current-tabset)))
-         (tab-face (if is-active-tab 'awesome-tab-selected 'awesome-tab-unselected))
-         (tab-icon-background (if is-active-tab 'awesome-tab-icon-selected-background 'awesome-tab-icon-unselected-background)))
+         (tab-face (if is-active-tab 'awesome-tab-selected 'awesome-tab-unselected)))
     (concat
      ;; Tab left edge.
      (awesome-tab-separator-render awesome-tab-style-left tab-face)
      ;; Tab icon.
-     (awesome-tab-icon-for-tab tab tab-icon-background)
+     (awesome-tab-icon-for-tab tab tab-face)
      ;; Tab label.
      (propertize
       (format " %s "

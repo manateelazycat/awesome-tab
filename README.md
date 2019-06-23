@@ -123,11 +123,8 @@ AwesomeTab will render file icon in tab automatically.
 
 | Option                                 | Description                                                               |
 | :--------                              | :----                                                                     |
-| awesome-tab-background-color           | Background color of awesome-tab                                           |
 | awesome-tab-selected                   | Active tab color                                                          |
 | awesome-tab-unselected                 | Inactive tab color                                                        |
-| awesome-tab-icon-selected-background   | Active tab icon background, same as awesome-tab-selected's background     |
-| awesome-tab-icon-unselected-background | Inactive tab icon background, same as awesome-tab-unselected's background |
 
 #### TabStyle
 Default tab style is "wave", you can customize option ```awesome-tab-style``` follow your preferences, below are the different tab style screenshots:
