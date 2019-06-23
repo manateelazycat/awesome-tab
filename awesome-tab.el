@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 3.4
-;; Last-Updated: 2019-06-23 07:22:06
+;; Version: 3.5
+;; Last-Updated: 2019-06-23 08:21:24
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -89,6 +89,7 @@
 ;;
 ;; 2019/06/23
 ;;      * Render file icon in tab when `all-the-icons' is load.
+;;      * Use `all-the-icons-icon-for-buffer' to display icon for dired mode.
 ;;
 ;; 2019/04/14
 ;;      * Make `awesome-tab-last-sticky-func-name' default with nil.
@@ -555,13 +556,6 @@ current cached copy."
 (defface awesome-tab-selected
   '((t (:background "#31343E" :foreground "white")))
   "Face used for the selected tab."
-  :group 'awesome-tab)
-
-(defface awesome-tab-button
-  '((t
-     :box nil
-     ))
-  "Face used for tab bar buttons."
   :group 'awesome-tab)
 
 ;;; Tabs
@@ -1388,26 +1382,36 @@ The memoization cache is frame-local."
 (defun awesome-tab-buffer-tab-label (tab)
   "Return a label for TAB.
 That is, a string used to represent it on the tab bar."
-  (let* ((tab-buffer (car tab))
-         (tab-file (buffer-file-name tab-buffer)))
-    ;; Init tab style.
-    (when (or (not awesome-tab-style-left)
-              (not awesome-tab-style-right))
-      (awesome-tab-select-separator-style awesome-tab-style))
-    ;; Render tab.
-    (awesome-tab-render-separator
-     (list awesome-tab-style-left
-           (when (and
-                  (featurep 'all-the-icons)
-                  tab-file
-                  (file-exists-p tab-file))
-             (all-the-icons-icon-for-file tab-file :v-adjust 0.05))
-           (format " %s "
-                   (let ((bufname (awesome-tab-buffer-name tab-buffer)))
-                     (if (> awesome-tab-label-fixed-length 0)
-                         (awesome-tab-truncate-string  awesome-tab-label-fixed-length bufname)
-                       bufname)))
-           awesome-tab-style-right))))
+  ;; Init tab style.
+  (when (or (not awesome-tab-style-left)
+            (not awesome-tab-style-right))
+    (awesome-tab-select-separator-style awesome-tab-style))
+  ;; Render tab.
+  (awesome-tab-render-separator
+   (list awesome-tab-style-left
+         (awesome-tab-icon-for-tab tab)
+         (format " %s "
+                 (let ((bufname (awesome-tab-buffer-name (car tab))))
+                   (if (> awesome-tab-label-fixed-length 0)
+                       (awesome-tab-truncate-string  awesome-tab-label-fixed-length bufname)
+                     bufname)))
+         awesome-tab-style-right)))
+
+(defun awesome-tab-icon-for-tab (tab)
+  (when (featurep 'all-the-icons)
+    (let* ((tab-buffer (car tab))
+           (tab-file (buffer-file-name tab-buffer)))
+      (cond
+       ;; Use `all-the-icons-icon-for-file' if current file is exists.
+       ((and
+         tab-file
+         (file-exists-p tab-file))
+        (all-the-icons-icon-for-file tab-file :v-adjust 0.05))
+       ;; Use `all-the-icons-icon-for-buffer' for current tab buffer at last.
+       (t
+        (with-current-buffer tab-buffer
+          (all-the-icons-icon-for-buffer)))))
+    ))
 
 (defun awesome-tab-buffer-name (tab-buffer)
   "Get buffer name of tab.
