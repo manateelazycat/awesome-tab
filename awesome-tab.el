@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 3.8
-;; Last-Updated: 2019-06-24 22:38:41
+;; Version: 3.9
+;; Last-Updated: 2019-06-25 14:36:41
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -85,6 +85,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/06/25
+;;      * Still display tab if all-the-icons cause "Error during redisplay" error in MacOS.
 ;;
 ;; 2019/06/24
 ;;      * Use ema2159's patch to fix icon face performance.
@@ -1387,38 +1390,39 @@ That is, a string used to represent it on the tab bar."
 (defun awesome-tab-icon-for-tab (tab face)
   "When tab buffer's file is exists, use `all-the-icons-icon-for-file' to fetch file icon.
 Otherwise use `all-the-icons-icon-for-buffer' to fetch icon for buffer."
-  (let* ((icon
-          (when (featurep 'all-the-icons)
-            (let* ((tab-buffer (car tab))
-                   (tab-file (buffer-file-name tab-buffer)))
-              (cond
-               ;; Use `all-the-icons-icon-for-file' if current file is exists.
-               ((and
-                 tab-file
-                 (file-exists-p tab-file))
-                (all-the-icons-icon-for-file tab-file :v-adjust -0.1 :height 1))
-               ;; Use `all-the-icons-icon-for-buffer' for current tab buffer at last.
-               (t
-                (with-current-buffer tab-buffer
-                  (all-the-icons-icon-for-buffer)))))))
-         (background (face-background face))
-         (original-props (get-text-property 0 'face icon)))
-    ;; Dynamic adjust icon's background,
-    ;; don't use propertized wrap icon, it will cause elisp icon render wrong graphics.
-    ;;
-    ;; Thanks ema2159 for code block ;)
-    (remove-text-properties 0 1 '(face nil) icon)
-    (unless (eq (length original-props) 6)
-      (pop original-props))
-    (add-face-text-property 0 1 original-props nil icon)
-    (add-face-text-property 0 1 `(:background ,background) nil icon)
-    ;; Add space before icon if found one.
-    (if icon
-        (concat
-         (propertize " " 'face face)
-         icon)
-      icon)
-    ))
+  (ignore-errors
+    (let* ((icon
+            (when (featurep 'all-the-icons)
+              (let* ((tab-buffer (car tab))
+                     (tab-file (buffer-file-name tab-buffer)))
+                (cond
+                 ;; Use `all-the-icons-icon-for-file' if current file is exists.
+                 ((and
+                   tab-file
+                   (file-exists-p tab-file))
+                  (all-the-icons-icon-for-file tab-file :v-adjust -0.1 :height 1))
+                 ;; Use `all-the-icons-icon-for-buffer' for current tab buffer at last.
+                 (t
+                  (with-current-buffer tab-buffer
+                    (all-the-icons-icon-for-buffer)))))))
+           (background (face-background face))
+           (original-props (get-text-property 0 'face icon)))
+      ;; Dynamic adjust icon's background,
+      ;; don't use propertized wrap icon, it will cause elisp icon render wrong graphics.
+      ;;
+      ;; Thanks ema2159 for code block ;)
+      (remove-text-properties 0 1 '(face nil) icon)
+      (unless (eq (length original-props) 6)
+        (pop original-props))
+      (add-face-text-property 0 1 original-props nil icon)
+      (add-face-text-property 0 1 `(:background ,background) nil icon)
+      ;; Add space before icon if found one.
+      (if icon
+          (concat
+           (propertize " " 'face face)
+           icon)
+        nil)
+      )))
 
 (defun awesome-tab-buffer-name (tab-buffer)
   "Get buffer name of tab.
@@ -1824,8 +1828,8 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
         (when (featurep 'helm)
           (require 'helm)
           (helm-build-sync-source "Awesome-Tab Group"
-                                  :candidates #'awesome-tab-get-groups
-                                  :action '(("Switch to group" . awesome-tab-switch-group))))))
+            :candidates #'awesome-tab-get-groups
+            :action '(("Switch to group" . awesome-tab-switch-group))))))
 
 ;; Ivy source for switching group in ivy.
 (defvar ivy-source-awesome-tab-group nil)
