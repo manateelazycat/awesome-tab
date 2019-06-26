@@ -86,6 +86,9 @@
 
 ;;; Change log:
 ;;
+;; 2019/06/26
+;;      * Fix error of void function awesome-tab-separator-separator-height
+;;
 ;; 2019/06/25
 ;;      * Still display tab if all-the-icons cause "Error during redisplay" error in MacOS.
 ;;
@@ -1086,7 +1089,7 @@ destination color, and 2 is the interpolated color between 0 and 1."
     `(defun ,(intern (format "powerline-%s-%s" name (symbol-name dir)))
          (face1 face2 &optional height)
        (when window-system
-         (unless height (setq height (awesome-tab-separator-separator-height)))
+         (unless height (setq height awesome-tab-height))
          (let* ,(append `((color1 (when ,src-face
                                     (awesome-tab-separator-hex-color (awesome-tab-separator-background-color ,src-face))))
                           (color2 (when ,dst-face
