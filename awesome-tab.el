@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 3.9
-;; Last-Updated: 2019-06-25 14:36:41
+;; Version: 4.0
+;; Last-Updated: 2019-06-28 07:39:53
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -85,6 +85,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/06/28
+;;      * Fix messages buffer icon an FontAwesome errors, thanks ema2159. ;)
 ;;
 ;; 2019/06/26
 ;;      * Fix error of void function awesome-tab-separator-separator-height
@@ -1415,7 +1418,7 @@ Otherwise use `all-the-icons-icon-for-buffer' to fetch icon for buffer."
       ;;
       ;; Thanks ema2159 for code block ;)
       (remove-text-properties 0 1 '(face nil) icon)
-      (unless (eq (length original-props) 6)
+      (unless (<= (length original-props) 6)
         (pop original-props))
       (add-face-text-property 0 1 original-props nil icon)
       (add-face-text-property 0 1 `(:background ,background) nil icon)
