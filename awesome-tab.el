@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 4.0
-;; Last-Updated: 2019-06-28 07:39:53
+;; Version: 4.1
+;; Last-Updated: 2019-06-28 20:10:06
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -88,6 +88,7 @@
 ;;
 ;; 2019/06/28
 ;;      * Fix messages buffer icon an FontAwesome errors, thanks ema2159. ;)
+;;      * Set height of tab face, avoid tab render error when user don't load any third theme.
 ;;
 ;; 2019/06/26
 ;;      * Fix error of void function awesome-tab-separator-separator-height
@@ -544,12 +545,12 @@ current cached copy."
 ;;
 (defface awesome-tab-unselected
   '((t
-     (:background "#3D3C3D" :foreground "grey50")))
+     (:background "#3D3C3D" :foreground "grey50" :height 130)))
   "Face used for unselected tabs."
   :group 'awesome-tab)
 
 (defface awesome-tab-selected
-  '((t (:background "#31343E" :foreground "white")))
+  '((t (:background "#31343E" :foreground "white" :height 130)))
   "Face used for the selected tab."
   :group 'awesome-tab)
 
