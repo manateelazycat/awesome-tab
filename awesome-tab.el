@@ -554,19 +554,62 @@ current cached copy."
 ;;; Faces
 ;;
 
-;; Make `header-line' background same as default face.
-(set-face-attribute 'header-line nil :background (face-background 'default))
+(defun awesome-tab-color-blend (c1 c2 alpha)
+  "Blend two colors C1 and C2 with ALPHA.
+C1 and C2 are hexidecimal strings.
+ALPHA is a number between 0.0 and 1.0 which corresponds to the
+infouence of C1 on the result."
+  (apply #'(lambda (r g b)
+             (format "#%02x%02x%02x"
+                     (ash r -8)
+                     (ash g -8)
+                     (ash b -8)))
+         (cl-mapcar
+          (lambda (x y)
+            (round (+ (* x alpha) (* y (- 1 alpha)))))
+          (color-values c1) (color-values c2))))
 
 (defface awesome-tab-unselected
-  '((t
-     (:background "#3D3C3D" :foreground "grey50" :height 130)))
+  '((t (:height 130)))
   "Face used for unselected tabs."
   :group 'awesome-tab)
 
 (defface awesome-tab-selected
-  '((t (:background "#31343E" :foreground "white" :height 130)))
+  '((t (:height 130)))
   "Face used for the selected tab."
   :group 'awesome-tab)
+
+(let* ((fg (face-foreground 'default))
+       (bg (face-background 'default))
+       (white "#FFFFFF")
+       (black "#000000")
+       ;; for light themes
+       (bg-dark (awesome-tab-color-blend black bg 0.1))
+       (bg-more-dark (awesome-tab-color-blend black bg 0.25))
+       (fg-dark (awesome-tab-color-blend fg bg-dark 0.7))
+       (fg-more-dark (awesome-tab-color-blend black fg 0.3))
+       ;; for dark themes
+       (bg-light (awesome-tab-color-blend white bg 0.05))
+       (bg-more-light (awesome-tab-color-blend white bg 0.2))
+       (fg-light (awesome-tab-color-blend fg bg 0.7))
+       (fg-more-light (awesome-tab-color-blend white fg 0.3)))
+  ;; Make `header-line' background same as default face.
+  (set-face-attribute 'header-line nil :background bg)
+  (cond
+   ((eq (frame-parameter nil 'background-mode) 'dark)
+    (set-face-attribute 'awesome-tab-unselected nil
+                        :background bg-light
+                        :foreground fg-dark)
+    (set-face-attribute 'awesome-tab-selected nil
+                        :background bg-more-light
+                        :foreground fg-more-light))
+   (t
+    (set-face-attribute 'awesome-tab-unselected nil
+                        :background bg-dark
+                        :foreground fg-light)
+    (set-face-attribute 'awesome-tab-selected nil
+                        :background bg-more-dark
+                        :foreground fg-more-dark))))
 
 ;;; Tabs
 ;;
