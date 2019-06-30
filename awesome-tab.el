@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 4.3
-;; Last-Updated: 2019-06-30 22:24:32
+;; Version: 4.4
+;; Last-Updated: 2019-07-01 07:32:33
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -85,6 +85,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/07/01
+;;      * Make awesome-tab's colors change with user selected theme, thank you so much AmaiKinono.
 ;;
 ;; 2019/06/30
 ;;      * Add customize option `awesome-tab-display-icon' .
@@ -190,6 +193,7 @@
 ;;; Acknowledgements:
 ;;
 ;; casouri: documentation and many useful patches.
+;; AmaiKinono: contributed to the patch that make tab color change with the theme automatically 
 ;;
 
 ;;; TODO
@@ -554,17 +558,14 @@ current cached copy."
 ;;; Faces
 ;;
 
-;; Make `header-line' background same as default face.
-(set-face-attribute 'header-line nil :background (face-background 'default))
-
 (defface awesome-tab-unselected
   '((t
-     (:background "#3D3C3D" :foreground "grey50" :height 130)))
+     (:height 130)))
   "Face used for unselected tabs."
   :group 'awesome-tab)
 
 (defface awesome-tab-selected
-  '((t (:background "#31343E" :foreground "white" :height 130)))
+  '((t (:height 130)))
   "Face used for the selected tab."
   :group 'awesome-tab)
 
@@ -575,8 +576,64 @@ current cached copy."
     (define-key map (vector 'header-line mouse) function)
     map))
 
+(defun awesome-tab-color-blend (c1 c2 alpha)
+  "Blend two colors C1 and C2 with ALPHA.
+C1 and C2 are hexidecimal strings.
+ALPHA is a number between 0.0 and 1.0 which corresponds to the
+infouence of C1 on the result."
+  (apply #'(lambda (r g b)
+             (format "#%02x%02x%02x"
+                     (ash r -8)
+                     (ash g -8)
+                     (ash b -8)))
+         (cl-mapcar
+          (lambda (x y)
+            (round (+ (* x alpha) (* y (- 1 alpha)))))
+          (color-values c1) (color-values c2))))
+
+(defun awesome-tab-adjust-color-with-theme ()
+  "We need adjust awesome-tab's colors when user switch new theme."
+  (let* ((fg (face-foreground 'default))
+         (bg (face-background 'default))
+         (white "#FFFFFF")
+         (black "#000000")
+         ;; for light themes
+         (bg-dark (awesome-tab-color-blend black bg 0.1))
+         (bg-more-dark (awesome-tab-color-blend black bg 0.25))
+         (fg-dark (awesome-tab-color-blend fg bg-dark 0.7))
+         (fg-more-dark (awesome-tab-color-blend black fg 0.3))
+         ;; for dark themes
+         (bg-light (awesome-tab-color-blend white bg 0.05))
+         (bg-more-light (awesome-tab-color-blend white bg 0.2))
+         (fg-light (awesome-tab-color-blend fg bg 0.7))
+         (fg-more-light (awesome-tab-color-blend white fg 0.3)))
+    ;; Because tab separator is XPM object, we need re-init those XPM object after change theme.
+    (awesome-tab-separator-init-vars)
+    ;; Make `header-line' background same as default face.
+    (set-face-attribute 'header-line nil :background bg)
+    ;; Make tab background same as default face.
+    (awesome-tab-select-separator-style awesome-tab-style)
+    ;; Make tab foreground change with theme.
+    (cond
+     ((eq (frame-parameter nil 'background-mode) 'dark)
+      (set-face-attribute 'awesome-tab-unselected nil
+                          :background bg-light
+                          :foreground fg-dark)
+      (set-face-attribute 'awesome-tab-selected nil
+                          :background bg-more-light
+                          :foreground fg-more-light))
+     (t
+      (set-face-attribute 'awesome-tab-unselected nil
+                          :background bg-dark
+                          :foreground fg-light)
+      (set-face-attribute 'awesome-tab-selected nil
+                          :background bg-more-dark
+                          :foreground fg-more-dark)))))
+
 (defun awesome-tab-line-format (tabset)
   "Return the `header-line-format' value to display TABSET."
+  (awesome-tab-adjust-color-with-theme)
+
   (let* ((sel (awesome-tab-selected-tab tabset))
          (tabs (awesome-tab-view tabset))
          (padcolor (face-background 'default))
@@ -1347,22 +1404,26 @@ The memoization cache is frame-local."
     (modify-frame-parameters nil `((powerline-cache . ,table)))
     table))
 
-(awesome-tab-separator-memoize (awesome-tab-separator-alternate left))
-(awesome-tab-separator-memoize (awesome-tab-separator-alternate right))
-(awesome-tab-separator-memoize (awesome-tab-separator-bar left))
-(awesome-tab-separator-memoize (awesome-tab-separator-bar right))
-(awesome-tab-separator-memoize (awesome-tab-separator-box left))
-(awesome-tab-separator-memoize (awesome-tab-separator-box right))
-(awesome-tab-separator-memoize (awesome-tab-separator-chamfer left))
-(awesome-tab-separator-memoize (awesome-tab-separator-chamfer right))
-(awesome-tab-separator-memoize (awesome-tab-separator-rounded left))
-(awesome-tab-separator-memoize (awesome-tab-separator-rounded right))
-(awesome-tab-separator-memoize (awesome-tab-separator-slant left))
-(awesome-tab-separator-memoize (awesome-tab-separator-slant right))
-(awesome-tab-separator-memoize (awesome-tab-separator-wave left))
-(awesome-tab-separator-memoize (awesome-tab-separator-wave right))
-(awesome-tab-separator-memoize (awesome-tab-separator-zigzag left))
-(awesome-tab-separator-memoize (awesome-tab-separator-zigzag right))
+(defun awesome-tab-separator-init-vars ()
+  (awesome-tab-separator-memoize (awesome-tab-separator-alternate left))
+  (awesome-tab-separator-memoize (awesome-tab-separator-alternate right))
+  (awesome-tab-separator-memoize (awesome-tab-separator-bar left))
+  (awesome-tab-separator-memoize (awesome-tab-separator-bar right))
+  (awesome-tab-separator-memoize (awesome-tab-separator-box left))
+  (awesome-tab-separator-memoize (awesome-tab-separator-box right))
+  (awesome-tab-separator-memoize (awesome-tab-separator-chamfer left))
+  (awesome-tab-separator-memoize (awesome-tab-separator-chamfer right))
+  (awesome-tab-separator-memoize (awesome-tab-separator-rounded left))
+  (awesome-tab-separator-memoize (awesome-tab-separator-rounded right))
+  (awesome-tab-separator-memoize (awesome-tab-separator-slant left))
+  (awesome-tab-separator-memoize (awesome-tab-separator-slant right))
+  (awesome-tab-separator-memoize (awesome-tab-separator-wave left))
+  (awesome-tab-separator-memoize (awesome-tab-separator-wave right))
+  (awesome-tab-separator-memoize (awesome-tab-separator-zigzag left))
+  (awesome-tab-separator-memoize (awesome-tab-separator-zigzag right))
+  )
+
+(awesome-tab-separator-init-vars)
 
 (defvar awesome-tab-style-left nil)
 (defvar awesome-tab-style-right nil)
@@ -1385,10 +1446,6 @@ element."
 (defun awesome-tab-buffer-tab-label (tab)
   "Return a label for TAB.
 That is, a string used to represent it on the tab bar."
-  ;; Init tab style.
-  (when (or (not awesome-tab-style-left)
-            (not awesome-tab-style-right))
-    (awesome-tab-select-separator-style awesome-tab-style))
   (let* ((is-active-tab (awesome-tab-selected-p tab (awesome-tab-current-tabset)))
          (tab-face (if is-active-tab 'awesome-tab-selected 'awesome-tab-unselected)))
     (concat
