@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 4.2
-;; Last-Updated: 2019-06-28 21:34:54
+;; Version: 4.3
+;; Last-Updated: 2019-06-30 22:24:32
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -85,6 +85,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/06/30
+;;      * Add customize option `awesome-tab-display-icon' .
 ;;
 ;; 2019/06/28
 ;;      * Fix messages buffer icon an FontAwesome errors, thanks ema2159. ;)
@@ -262,6 +265,12 @@ Feel free to add hook in this option. ;)"
 (defcustom awesome-tab-display-sticky-function-name nil
   "Non-nil to display sticky function name in tab.
 Sticky function is the function at the top of the current window sticky."
+  :group 'awesome-tab
+  :type 'boolean)
+
+(defcustom awesome-tab-display-icon t
+  "Non-nil to display icon in tab, this feature need `all-the-icons' is loaded.
+Set this option with nil if you don't like icon in tab."
   :group 'awesome-tab
   :type 'boolean)
 
@@ -1403,38 +1412,41 @@ That is, a string used to represent it on the tab bar."
   "When tab buffer's file is exists, use `all-the-icons-icon-for-file' to fetch file icon.
 Otherwise use `all-the-icons-icon-for-buffer' to fetch icon for buffer."
   (ignore-errors
-    (let* ((icon
-            (when (featurep 'all-the-icons)
-              (let* ((tab-buffer (car tab))
-                     (tab-file (buffer-file-name tab-buffer)))
-                (cond
-                 ;; Use `all-the-icons-icon-for-file' if current file is exists.
-                 ((and
-                   tab-file
-                   (file-exists-p tab-file))
-                  (all-the-icons-icon-for-file tab-file :v-adjust -0.1 :height 1))
-                 ;; Use `all-the-icons-icon-for-buffer' for current tab buffer at last.
-                 (t
-                  (with-current-buffer tab-buffer
-                    (all-the-icons-icon-for-buffer)))))))
-           (background (face-background face))
-           (original-props (get-text-property 0 'face icon)))
-      ;; Dynamic adjust icon's background,
-      ;; don't use propertized wrap icon, it will cause elisp icon render wrong graphics.
-      ;;
-      ;; Thanks ema2159 for code block ;)
-      (remove-text-properties 0 1 '(face nil) icon)
-      (unless (<= (length original-props) 6)
-        (pop original-props))
-      (add-face-text-property 0 1 original-props nil icon)
-      (add-face-text-property 0 1 `(:background ,background) nil icon)
-      ;; Add space before icon if found one.
-      (if icon
-          (concat
-           (propertize " " 'face face)
-           icon)
-        nil)
-      )))
+    (if (and awesome-tab-display-icon
+             (featurep 'all-the-icons))
+        (let* ((icon
+                (let* ((tab-buffer (car tab))
+                       (tab-file (buffer-file-name tab-buffer)))
+                  (cond
+                   ;; Use `all-the-icons-icon-for-file' if current file is exists.
+                   ((and
+                     tab-file
+                     (file-exists-p tab-file))
+                    (all-the-icons-icon-for-file tab-file :v-adjust -0.1 :height 1))
+                   ;; Use `all-the-icons-icon-for-buffer' for current tab buffer at last.
+                   (t
+                    (with-current-buffer tab-buffer
+                      (all-the-icons-icon-for-buffer))))))
+               original-props)
+          (if icon
+              (progn
+                ;; Dynamic adjust icon's background,
+                ;; don't use propertized wrap icon, it will cause elisp icon render wrong graphics.
+                ;;
+                ;; Thanks ema2159 for code block ;)
+                (setq original-props (get-text-property 0 'face icon))
+                (remove-text-properties 0 1 '(face nil) icon)
+                (unless (<= (length original-props) 6)
+                  (pop original-props))
+                (add-face-text-property 0 1 original-props nil icon)
+                (add-face-text-property 0 1 `(:background ,(face-background face)) nil icon)
+
+                ;; Add space before icon if found one.
+                (concat
+                 (propertize " " 'face face)
+                 icon))
+            nil))
+      nil)))
 
 (defun awesome-tab-buffer-name (tab-buffer)
   "Get buffer name of tab.
@@ -1840,8 +1852,8 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
         (when (featurep 'helm)
           (require 'helm)
           (helm-build-sync-source "Awesome-Tab Group"
-            :candidates #'awesome-tab-get-groups
-            :action '(("Switch to group" . awesome-tab-switch-group))))))
+                                  :candidates #'awesome-tab-get-groups
+                                  :action '(("Switch to group" . awesome-tab-switch-group))))))
 
 ;; Ivy source for switching group in ivy.
 (defvar ivy-source-awesome-tab-group nil)
