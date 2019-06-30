@@ -119,6 +119,9 @@ Ivy fans can use ```awesome-tab-build-ivy-source```
 If you have install [AllTheIcons](https://github.com/domtronn/all-the-icons.el) successfully.
 AwesomeTab will render file icon in tab automatically.
 
+If you dislike icon render in tab and still need use ```all-the-icons``` plugin,
+you can set variable ```awesome-tab-display-icon``` with nil.
+
 #### Theme
 
 | Option                                 | Description                                                               |
