@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 4.6
-;; Last-Updated: 2019-07-01 18:31:24
+;; Version: 4.7
+;; Last-Updated: 2019-07-01 22:16:44
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -90,6 +90,7 @@
 ;;      * Make awesome-tab's colors change with user selected theme, thank you so much AmaiKinono.
 ;;      * Adjust dark mode background tab's color.
 ;;      * Remove local-mode code.
+;;      * Refactory code.
 ;;
 ;; 2019/06/30
 ;;      * Add customize option `awesome-tab-display-icon' .
@@ -1430,41 +1431,37 @@ That is, a string used to represent it on the tab bar."
   "When tab buffer's file is exists, use `all-the-icons-icon-for-file' to fetch file icon.
 Otherwise use `all-the-icons-icon-for-buffer' to fetch icon for buffer."
   (ignore-errors
-    (if (and awesome-tab-display-icon
-             (featurep 'all-the-icons))
-        (let* ((icon
-                (let* ((tab-buffer (car tab))
-                       (tab-file (buffer-file-name tab-buffer)))
-                  (cond
-                   ;; Use `all-the-icons-icon-for-file' if current file is exists.
-                   ((and
-                     tab-file
-                     (file-exists-p tab-file))
-                    (all-the-icons-icon-for-file tab-file :v-adjust -0.1 :height 1))
-                   ;; Use `all-the-icons-icon-for-buffer' for current tab buffer at last.
-                   (t
-                    (with-current-buffer tab-buffer
-                      (all-the-icons-icon-for-buffer))))))
-               original-props)
-          (if icon
-              (progn
-                ;; Dynamic adjust icon's background,
-                ;; don't use propertized wrap icon, it will cause elisp icon render wrong graphics.
-                ;;
-                ;; Thanks ema2159 for code block ;)
-                (setq original-props (get-text-property 0 'face icon))
-                (remove-text-properties 0 1 '(face nil) icon)
-                (unless (<= (length original-props) 6)
-                  (pop original-props))
-                (add-face-text-property 0 1 original-props nil icon)
-                (add-face-text-property 0 1 `(:background ,(face-background face)) nil icon)
+    (when (and awesome-tab-display-icon
+               (featurep 'all-the-icons))
+      (let* ((tab-buffer (car tab))
+             (tab-file (buffer-file-name tab-buffer))
+             (icon
+              (cond
+               ;; Use `all-the-icons-icon-for-file' if current file is exists.
+               ((and
+                 tab-file
+                 (file-exists-p tab-file))
+                (all-the-icons-icon-for-file tab-file :v-adjust -0.1 :height 1))
+               ;; Use `all-the-icons-icon-for-buffer' for current tab buffer at last.
+               (t
+                (with-current-buffer tab-buffer
+                  (all-the-icons-icon-for-buffer))))))
+        (when icon
+          (awesome-tab-change-icon-background icon (face-background face))
+          ;; Add space before icon if found one.
+          (concat (propertize " " 'face face) icon))))))
 
-                ;; Add space before icon if found one.
-                (concat
-                 (propertize " " 'face face)
-                 icon))
-            nil))
-      nil)))
+(defun awesome-tab-change-icon-background (icon background-color)
+  ;; Dynamic adjust icon's background,
+  ;; don't use propertized wrap icon, it will cause elisp icon render wrong graphics.
+  ;;
+  ;; Thanks ema2159 for code block ;)
+  (let ((original-props (get-text-property 0 'face icon)))
+    (remove-text-properties 0 1 '(face nil) icon)
+    (unless (<= (length original-props) 6)
+      (pop original-props))
+    (add-face-text-property 0 1 original-props nil icon)
+    (add-face-text-property 0 1 `(:background ,background-color) nil icon)))
 
 (defun awesome-tab-buffer-name (tab-buffer)
   "Get buffer name of tab.
