@@ -826,7 +826,6 @@ Depend on the setting of the option `awesome-tab-cycle-scope'."
     (define-key km [(control right)] 'awesome-tab-forward)
     (define-key km [(control up)]    'awesome-tab-backward-group)
     (define-key km [(control down)]  'awesome-tab-forward-group)
-    (define-key km [(control f10)]   'awesome-tab-local-mode)
     km)
   "The key bindings provided in Awesome-Tab mode.")
 
@@ -858,14 +857,6 @@ Returns non-nil if the new state is enabled.
         (setq-default header-line-format awesome-tab-header-line-format))
 ;;; OFF
     (when (awesome-tab-mode-on-p)
-      ;; Turn off Awesome-Tab-Local mode globally.
-      (mapc #'(lambda (b)
-                (condition-case nil
-                    (with-current-buffer b
-                      (and awesome-tab-local-mode
-                           (awesome-tab-local-mode -1)))
-                  (error nil)))
-            (buffer-list))
       ;; Restore previous `header-line-format'.
       (setq-default header-line-format awesome-tab--global-hlf)
       (awesome-tab-free-tabsets-store))
