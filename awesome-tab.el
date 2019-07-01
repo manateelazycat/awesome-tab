@@ -581,7 +581,7 @@ current cached copy."
   "Blend two colors C1 and C2 with ALPHA.
 C1 and C2 are hexidecimal strings.
 ALPHA is a number between 0.0 and 1.0 which corresponds to the
-infouence of C1 on the result."
+influence of C1 on the result."
   (apply #'(lambda (r g b)
              (format "#%02x%02x%02x"
                      (ash r -8)
@@ -594,10 +594,19 @@ infouence of C1 on the result."
 
 (defun awesome-tab-adjust-color-with-theme ()
   "We need adjust awesome-tab's colors when user switch new theme."
-  (let* ((fg (face-foreground 'default))
-         (bg (face-background 'default))
-         (white "#FFFFFF")
+  (let* ((white "#FFFFFF")
          (black "#000000")
+         (bg-mode (frame-parameter nil 'background-mode))
+         (bg-unspecified (string= (face-background 'default) "unspecified-bg"))
+         (fg-unspecified (string= (face-foreground 'default) "unspecified-fg"))
+         (fg (cond
+              ((and fg-unspecified (eq bg-mode 'dark)) "gray80")
+              ((and fg-unspecified (eq bg-mode 'light)) "gray20")
+              (t (face-foreground 'default))))
+         (bg (cond
+              ((and bg-unspecified (eq bg-mode 'dark)) "gray20")
+              ((and bg-unspecified (eq bg-mode 'light)) "gray80")
+              (t (face-background 'default))))
          ;; for light themes
          (bg-dark (awesome-tab-color-blend black bg 0.1))
          (bg-more-dark (awesome-tab-color-blend black bg 0.25))
@@ -616,7 +625,7 @@ infouence of C1 on the result."
     (awesome-tab-select-separator-style awesome-tab-style)
     ;; Make tab foreground change with theme.
     (cond
-     ((eq (frame-parameter nil 'background-mode) 'dark)
+     ((eq bg-mode 'dark)
       (set-face-attribute 'awesome-tab-unselected nil
                           :background bg-light
                           :foreground fg-dark)
