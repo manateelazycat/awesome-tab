@@ -79,9 +79,15 @@
 
 ;;; Customize:
 ;;
-;; `awesome-tab-selected'
-;; `awesome-tab-unselected'
+;; `awesome-tab-cycle-scope'
 ;; `awesome-tab-label-fixed-length'
+;; `awesome-tab-auto-scroll-flag'
+;; `awesome-tab-common-group-name'
+;; `awesometab-hide-tabs-hooks'
+;; `awesome-tab-height'
+;; `awesome-tab-style'
+;; `awesome-tab-display-sticky-function-name'
+;; `awesome-tab-display-icon'
 ;;
 
 ;;; Change log:
@@ -644,8 +650,9 @@ influence of C1 on the result."
 
 (defun awesome-tab-line-format (tabset)
   "Return the `header-line-format' value to display TABSET."
+  ;; Adjust color with theme.
   (awesome-tab-adjust-color-with-theme)
-
+  ;; Reder tab line.
   (let* ((sel (awesome-tab-selected-tab tabset))
          (tabs (awesome-tab-view tabset))
          (padcolor (face-background 'default))
