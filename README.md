@@ -123,11 +123,7 @@ If you dislike icon render in tab and still need use ```all-the-icons``` plugin,
 you can set variable ```awesome-tab-display-icon``` with nil.
 
 #### Theme
-
-| Option                                 | Description                                                               |
-| :--------                              | :----                                                                     |
-| awesome-tab-selected                   | Active tab color                                                          |
-| awesome-tab-unselected                 | Inactive tab color                                                        |
+Tab color will change with current theme, you don't need customize the color tab. 
 
 #### TabStyle
 Default tab style is "wave", you can customize option ```awesome-tab-style``` follow your preferences, below are the different tab style screenshots:
