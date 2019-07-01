@@ -123,7 +123,15 @@ If you dislike icon render in tab and still need use ```all-the-icons``` plugin,
 you can set variable ```awesome-tab-display-icon``` with nil.
 
 #### Theme
-Tab color will change with current theme, you don't need customize the color tab. 
+Tab color will change with current theme, you don't need customize the color tab.
+
+Emacs may not detect your theme style (light/dark) in the terminal correctly.
+You may need to set `frame-background-mode` manually to have correct tab (and text) colors:
+
+```Elisp
+(when (not (display-graphic-p))
+  (setq frame-background-mode 'dark))
+```
 
 #### TabStyle
 Default tab style is "wave", you can customize option ```awesome-tab-style``` follow your preferences, below are the different tab style screenshots:
