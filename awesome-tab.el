@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 4.5
-;; Last-Updated: 2019-07-01 10:37:54
+;; Version: 4.6
+;; Last-Updated: 2019-07-01 18:31:24
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -89,6 +89,7 @@
 ;; 2019/07/01
 ;;      * Make awesome-tab's colors change with user selected theme, thank you so much AmaiKinono.
 ;;      * Adjust dark mode background tab's color.
+;;      * Remove local-mode code.
 ;;
 ;; 2019/06/30
 ;;      * Add customize option `awesome-tab-display-icon' .
@@ -813,47 +814,6 @@ Depend on the setting of the option `awesome-tab-cycle-scope'."
   "Return non-nil if Awesome-Tab mode is on."
   (eq (default-value 'header-line-format)
       awesome-tab-header-line-format))
-
-;;; Awesome-Tab-Local mode
-;;
-(defvar awesome-tab--local-hlf nil)
-
-;;;###autoload
-(define-minor-mode awesome-tab-local-mode
-  "Toggle local display of the tab bar.
-With prefix argument ARG, turn on if positive, otherwise off.
-Returns non-nil if the new state is enabled.
-When turned on, if a local header line is shown, it is hidden to show
-the tab bar.  The tab bar is locally hidden otherwise.  When turned
-off, if a local header line is hidden or the tab bar is locally
-hidden, it is shown again.  Signal an error if Awesome-Tab mode is off."
-  :group 'awesome-tab
-  :global nil
-  (unless (awesome-tab-mode-on-p)
-    (error "Awesome-Tab mode must be enabled"))
-;;; ON
-  (if awesome-tab-local-mode
-      (if (and (local-variable-p 'header-line-format)
-               header-line-format)
-          ;; A local header line exists, hide it to show the tab bar.
-          (progn
-            ;; Fail in case of an inconsistency because another local
-            ;; header line is already hidden.
-            (when (local-variable-p 'awesome-tab--local-hlf)
-              (error "Another local header line is already hidden"))
-            (set (make-local-variable 'awesome-tab--local-hlf)
-                 header-line-format)
-            (kill-local-variable 'header-line-format))
-        ;; Otherwise hide the tab bar in this buffer.
-        (setq header-line-format nil))
-;;; OFF
-    (if (local-variable-p 'awesome-tab--local-hlf)
-        ;; A local header line is hidden, show it again.
-        (progn
-          (setq header-line-format awesome-tab--local-hlf)
-          (kill-local-variable 'awesome-tab--local-hlf))
-      ;; The tab bar is locally hidden, show it again.
-      (kill-local-variable 'header-line-format))))
 
 ;;; Awesome-Tab mode
 ;;
