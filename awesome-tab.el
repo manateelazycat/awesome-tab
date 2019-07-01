@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 4.4
-;; Last-Updated: 2019-07-01 07:32:33
+;; Version: 4.5
+;; Last-Updated: 2019-07-01 10:37:54
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -88,6 +88,7 @@
 ;;
 ;; 2019/07/01
 ;;      * Make awesome-tab's colors change with user selected theme, thank you so much AmaiKinono.
+;;      * Adjust dark mode background tab's color.
 ;;
 ;; 2019/06/30
 ;;      * Add customize option `awesome-tab-display-icon' .
@@ -193,7 +194,7 @@
 ;;; Acknowledgements:
 ;;
 ;; casouri: documentation and many useful patches.
-;; AmaiKinono: contributed to the patch that make tab color change with the theme automatically 
+;; AmaiKinono: contributed to the patch that make tab color change with the theme automatically
 ;;
 
 ;;; TODO
@@ -603,7 +604,7 @@ infouence of C1 on the result."
          (fg-dark (awesome-tab-color-blend fg bg-dark 0.7))
          (fg-more-dark (awesome-tab-color-blend black fg 0.3))
          ;; for dark themes
-         (bg-light (awesome-tab-color-blend white bg 0.05))
+         (bg-light (awesome-tab-color-blend white bg 0.1))
          (bg-more-light (awesome-tab-color-blend white bg 0.2))
          (fg-light (awesome-tab-color-blend fg bg 0.7))
          (fg-more-light (awesome-tab-color-blend white fg 0.3)))
