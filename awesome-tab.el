@@ -1877,18 +1877,17 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
                                   :candidates #'awesome-tab-get-groups
                                   :action '(("Switch to group" . awesome-tab-switch-group))))))
 
-;; Ivy source for switching group in ivy.
-(defvar ivy-source-awesome-tab-group nil)
-
-(defun awesome-tab-build-ivy-source ()
+;;;###autoload
+(defun awesome-tab-counsel-switch-group ()
+  "Switch group of awesome-tab."
   (interactive)
-  (setq ivy-source-awesome-tab-group
-        (when (featurep 'ivy)
-          (require 'ivy)
-          (ivy-read
-           "Awesome-Tab Groups:"
-           (awesome-tab-get-groups)
-           :action #'awesome-tab-switch-group))))
+  (when (featurep 'ivy)
+    (require 'ivy)
+    (ivy-read
+     "Awesome-Tab Groups:"
+     (awesome-tab-get-groups)
+     :action #'awesome-tab-switch-group
+     :caller 'awesome-tab-counsel-switch-group)))
 
 (defun awesome-tab-hide-tab (x)
   (let ((name (format "%s" x)))

@@ -103,15 +103,15 @@ Note that this function switches to the visible range,
 not the actual logical index position of the current group.
 
 ### Plugins
-If you're helm fans, you need add below code in your helm config,
-
-Then add ```helm-source-awesome-tab-group``` in ```helm-source-list```
+If you're a helm fan, you need to add below code in your helm config,
 
 ```Elisp
 (awesome-tab-build-helm-source)
 ```
 
-Ivy fans can use ```awesome-tab-build-ivy-source```
+Then add ```helm-source-awesome-tab-group``` to ```helm-source-list```.
+
+Ivy fans can use the ```awesome-tab-counsel-switch-group``` function instead.
 
 ### Customize
 
