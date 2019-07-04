@@ -287,6 +287,11 @@ Set this option with nil if you don't like icon in tab."
   :group 'awesome-tab
   :type 'boolean)
 
+(defcustom awesome-tab-show-tab-index nil
+  "Non-nil to display index in tab."
+  :group 'awesome-tab
+  :type 'boolean)
+
 (defvar awesome-tab-hide-tab-function 'awesome-tab-hide-tab
   "Function to hide tab.
 This fucntion accepet tab name, tab will hide if this function return ni.")
@@ -578,6 +583,16 @@ current cached copy."
   "Face used for the selected tab."
   :group 'awesome-tab)
 
+(defface awesome-tab-unselected-index
+  '((t (:inherit 'awesome-tab-unselected)))
+  "Face used for index on unselected tabs."
+  :group 'awesome-tab)
+
+(defface awesome-tab-selected-index
+  '((t (:inherit 'awesome-tab-selected)))
+  "Face used for index on selected tabs."
+  :group 'awesome-tab)
+
 ;;; Tabs
 ;;
 (defun awesome-tab-make-header-line-mouse-map (mouse function)
@@ -615,6 +630,7 @@ influence of C1 on the result."
               ((and bg-unspecified (eq bg-mode 'dark)) "gray20")
               ((and bg-unspecified (eq bg-mode 'light)) "gray80")
               (t (face-background 'default))))
+         (fg-error (face-foreground 'error))
          ;; for light themes
          (bg-dark (awesome-tab-color-blend black bg 0.1))
          (bg-more-dark (awesome-tab-color-blend black bg 0.25))
@@ -646,7 +662,12 @@ influence of C1 on the result."
                           :foreground fg-light)
       (set-face-attribute 'awesome-tab-selected nil
                           :background bg-more-dark
-                          :foreground fg-more-dark)))))
+                          :foreground fg-more-dark)))
+    ;; Set index faces.
+    (set-face-attribute 'awesome-tab-selected-index nil
+                        :foreground fg-error)
+    (set-face-attribute 'awesome-tab-unselected-index nil
+                        :foreground fg-error)))
 
 (defun awesome-tab-line-format (tabset)
   "Return the `header-line-format' value to display TABSET."
@@ -1416,7 +1437,9 @@ element."
   "Return a label for TAB.
 That is, a string used to represent it on the tab bar."
   (let* ((is-active-tab (awesome-tab-selected-p tab (awesome-tab-current-tabset)))
-         (tab-face (if is-active-tab 'awesome-tab-selected 'awesome-tab-unselected)))
+         (tab-face (if is-active-tab 'awesome-tab-selected 'awesome-tab-unselected))
+         (index-face (if is-active-tab 'awesome-tab-selected-index 'awesome-tab-unselected-index))
+         (current-buffer-index (cl-position tab (awesome-tab-view (awesome-tab-current-tabset t)))))
     (concat
      ;; Tab left edge.
      (awesome-tab-separator-render awesome-tab-style-left tab-face)
@@ -1430,6 +1453,9 @@ That is, a string used to represent it on the tab bar."
                     (awesome-tab-truncate-string  awesome-tab-label-fixed-length bufname)
                   bufname)))
       'face tab-face)
+     ;; Tab index.
+     (when awesome-tab-show-tab-index
+       (propertize (format "%s " (+ current-buffer-index 1)) 'face index-face))
      ;; Tab right edge.
      (awesome-tab-separator-render awesome-tab-style-right tab-face)
      )))

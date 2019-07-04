@@ -102,6 +102,9 @@ and switches to the tab of the corresponding index.
 Note that this function switches to the visible range,
 not the actual logical index position of the current group.
 
+Set customizable variable `awesome-tab-show-tab-index` to `t` to have the
+number displayed in the tab.
+
 ### Plugins
 If you're a helm fan, you need to add below code in your helm config,
 
