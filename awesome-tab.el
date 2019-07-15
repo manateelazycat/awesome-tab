@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 4.7
-;; Last-Updated: 2019-07-01 22:16:44
+;; Version: 4.8
+;; Last-Updated: 2019-07-15 21:59:42
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -91,6 +91,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/07/15
+;;      * Don't call `awesome-tab-adjust-buffer-order' if user use mouse click tab.
 ;;
 ;; 2019/07/01
 ;;      * Make awesome-tab's colors change with user selected theme, thank you so much AmaiKinono.
@@ -1938,7 +1941,9 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
   "Put the two buffers switched to the adjacent position after current buffer changed."
   ;; Don't trigger by awesome-tab command, it's annoying.
   ;; This feature should trigger by search plugins, such as ibuffer, helm or ivy.
-  (unless (string-prefix-p "awesome-tab" (format "%s" this-command))
+  (unless (or (string-prefix-p "awesome-tab" (format "%s" this-command))
+              (string-prefix-p "mouse-drag-header-line" (format "%s" this-command))
+              (string-prefix-p "(lambda (event) (interactive e) (awesome-tab-buffer-select-tab" (format "%s" this-command)))
     ;; Just continue when buffer changed.
     (when (and (not (eq (current-buffer) awesome-tab-last-focus-buffer))
                (not (minibufferp)))
