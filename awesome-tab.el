@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 4.9
-;; Last-Updated: 2019-07-17 19:44:43
+;; Version: 5.0
+;; Last-Updated: 2019-07-17 20:53:36
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -96,6 +96,7 @@
 ;;      * Init `header-line' height from `default' face,
 ;;        `header-line' default inhibit from `mode-line',
 ;;        awesome-tab icon will disappear if `mode-line' height set with 0.1 by other plugins (such as awesome-tray).
+;;      * Use `stringp' instead `ignore-errors' in `awesome-tab-icon-for-tab'.
 ;;
 ;; 2019/07/15
 ;;      * Don't call `awesome-tab-adjust-buffer-order' if user use mouse click tab.
@@ -1445,26 +1446,27 @@ That is, a string used to represent it on the tab bar."
 (defun awesome-tab-icon-for-tab (tab face)
   "When tab buffer's file is exists, use `all-the-icons-icon-for-file' to fetch file icon.
 Otherwise use `all-the-icons-icon-for-buffer' to fetch icon for buffer."
-  (ignore-errors
-    (when (and awesome-tab-display-icon
-               (featurep 'all-the-icons))
-      (let* ((tab-buffer (car tab))
-             (tab-file (buffer-file-name tab-buffer))
-             (icon
-              (cond
-               ;; Use `all-the-icons-icon-for-file' if current file is exists.
-               ((and
-                 tab-file
-                 (file-exists-p tab-file))
-                (all-the-icons-icon-for-file tab-file :v-adjust -0.1 :height 1))
-               ;; Use `all-the-icons-icon-for-buffer' for current tab buffer at last.
-               (t
-                (with-current-buffer tab-buffer
-                  (all-the-icons-icon-for-buffer))))))
-        (when icon
-          (awesome-tab-change-icon-background icon (face-background face))
-          ;; Add space before icon if found one.
-          (concat (propertize " " 'face face) icon))))))
+  (when (and awesome-tab-display-icon
+             (featurep 'all-the-icons))
+    (let* ((tab-buffer (car tab))
+           (tab-file (buffer-file-name tab-buffer))
+           (icon
+            (cond
+             ;; Use `all-the-icons-icon-for-file' if current file is exists.
+             ((and
+               tab-file
+               (file-exists-p tab-file))
+              (all-the-icons-icon-for-file tab-file :v-adjust -0.1 :height 1))
+             ;; Use `all-the-icons-icon-for-buffer' for current tab buffer at last.
+             (t
+              (with-current-buffer tab-buffer
+                (all-the-icons-icon-for-buffer))))))
+      ;; `get-text-property' need icon is string type.
+      (when (and icon
+                 (stringp icon))
+        (awesome-tab-change-icon-background icon (face-background face))
+        ;; Add space before icon if found one.
+        (concat (propertize " " 'face face) icon)))))
 
 (defun awesome-tab-change-icon-background (icon background-color)
   ;; Dynamic adjust icon's background,
