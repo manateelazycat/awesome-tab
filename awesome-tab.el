@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 4.8
-;; Last-Updated: 2019-07-15 21:59:42
+;; Version: 4.9
+;; Last-Updated: 2019-07-17 19:44:43
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -91,6 +91,11 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/07/17
+;;      * Init `header-line' height from `default' face,
+;;        `header-line' default inhibit from `mode-line',
+;;        awesome-tab icon will disappear if `mode-line' height set with 0.1 by other plugins (such as awesome-tray).
 ;;
 ;; 2019/07/15
 ;;      * Don't call `awesome-tab-adjust-buffer-order' if user use mouse click tab.
@@ -631,7 +636,7 @@ influence of C1 on the result."
     ;; Because tab separator is XPM object, we need re-init those XPM object after change theme.
     (awesome-tab-separator-init-vars)
     ;; Make `header-line' background same as default face.
-    (set-face-attribute 'header-line nil :background bg)
+    (set-face-attribute 'header-line nil :background bg :height (face-attribute 'default :height))
     ;; Make tab background same as default face.
     (awesome-tab-select-separator-style awesome-tab-style)
     ;; Make tab foreground change with theme.
