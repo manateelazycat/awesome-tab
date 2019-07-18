@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 5.0
-;; Last-Updated: 2019-07-17 20:53:36
+;; Version: 5.1
+;; Last-Updated: 2019-07-18 08:05:14
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -91,6 +91,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/07/18
+;;      * Use ema2159's way to render icon.
 ;;
 ;; 2019/07/17
 ;;      * Init `header-line' height from `default' face,
@@ -1432,16 +1435,19 @@ That is, a string used to represent it on the tab bar."
      ;; Tab icon.
      (awesome-tab-icon-for-tab tab tab-face)
      ;; Tab label.
-     (propertize
-      (format " %s "
-              (let ((bufname (awesome-tab-buffer-name (car tab))))
-                (if (> awesome-tab-label-fixed-length 0)
-                    (awesome-tab-truncate-string  awesome-tab-label-fixed-length bufname)
-                  bufname)))
-      'face tab-face)
+     (propertize (awesome-tab-tab-name tab) 'face tab-face)
      ;; Tab right edge.
      (awesome-tab-separator-render awesome-tab-style-right tab-face)
      )))
+
+(defun awesome-tab-tab-name (tab)
+  "Render tab's name.
+Tab name will truncate if option `awesome-tab-truncate-string' big than zero."
+  (format " %s "
+          (let ((bufname (awesome-tab-buffer-name (car tab))))
+            (if (> awesome-tab-label-fixed-length 0)
+                (awesome-tab-truncate-string  awesome-tab-label-fixed-length bufname)
+              bufname))))
 
 (defun awesome-tab-icon-for-tab (tab face)
   "When tab buffer's file is exists, use `all-the-icons-icon-for-file' to fetch file icon.
@@ -1450,6 +1456,7 @@ Otherwise use `all-the-icons-icon-for-buffer' to fetch icon for buffer."
              (featurep 'all-the-icons))
     (let* ((tab-buffer (car tab))
            (tab-file (buffer-file-name tab-buffer))
+           (background (face-background face))
            (icon
             (cond
              ;; Use `all-the-icons-icon-for-file' if current file is exists.
@@ -1461,24 +1468,15 @@ Otherwise use `all-the-icons-icon-for-buffer' to fetch icon for buffer."
              (t
               (with-current-buffer tab-buffer
                 (all-the-icons-icon-for-buffer))))))
-      ;; `get-text-property' need icon is string type.
       (when (and icon
+                 ;; `get-text-property' need icon is string type.
                  (stringp icon))
-        (awesome-tab-change-icon-background icon (face-background face))
-        ;; Add space before icon if found one.
-        (concat (propertize " " 'face face) icon)))))
-
-(defun awesome-tab-change-icon-background (icon background-color)
-  ;; Dynamic adjust icon's background,
-  ;; don't use propertized wrap icon, it will cause elisp icon render wrong graphics.
-  ;;
-  ;; Thanks ema2159 for code block ;)
-  (let ((original-props (get-text-property 0 'face icon)))
-    (remove-text-properties 0 1 '(face nil) icon)
-    (unless (<= (length original-props) 6)
-      (pop original-props))
-    (add-face-text-property 0 1 original-props nil icon)
-    (add-face-text-property 0 1 `(:background ,background-color) nil icon)))
+        ;; Thanks ema2159 for code block ;)
+        (propertize
+         icon
+         'face `(:inherit ,(get-text-property 0 'face icon)
+                          :background ,background
+                          ))))))
 
 (defun awesome-tab-buffer-name (tab-buffer)
   "Get buffer name of tab.
@@ -1884,8 +1882,8 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
         (when (featurep 'helm)
           (require 'helm)
           (helm-build-sync-source "Awesome-Tab Group"
-                                  :candidates #'awesome-tab-get-groups
-                                  :action '(("Switch to group" . awesome-tab-switch-group))))))
+            :candidates #'awesome-tab-get-groups
+            :action '(("Switch to group" . awesome-tab-switch-group))))))
 
 ;;;###autoload
 (defun awesome-tab-counsel-switch-group ()
