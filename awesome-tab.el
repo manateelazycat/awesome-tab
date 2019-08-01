@@ -299,32 +299,6 @@ Set this option with nil if you don't like icon in tab."
   :group 'awesome-tab
   :type 'boolean)
 
-(defcustom awesome-tab-ace-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
-  "Keys used for `awesome-tab-ace-jump'."
-  :group 'awesome-tab
-  :set #'(lambda (symbol value)
-           (set-default symbol value)
-           (let ((1k-seqs nil)
-                 (2k-seqs nil))
-             (dolist (a value)
-               (dolist (b value)
-                 (push (list a b) 2k-seqs))
-               (push (list a) 1k-seqs))
-             (setq awesome-tab-ace-2-key-seqs (nreverse 2k-seqs))
-             (setq awesome-tab-ace-1-key-seqs (nreverse 1k-seqs))))
-  :type '(repeat :tag "Keys" character))
-
-(defcustom awesome-tab-ace-str-style 'replace-icon
-  "Position of ace strings."
-  :group 'awesome-tab
-  :type '(choice
-          (const :tag "Replace icon" replace-icon)
-          (const :tag "Left" left)
-          (const :tag "Right" right)))
-
-(defvar-local awesome-tab-ace-state nil
-  "Whether current buffer is doing `awesome-tab-ace-jump' or not.")
-
 (defvar awesome-tab-hide-tab-function 'awesome-tab-hide-tab
   "Function to hide tab.
 This fucntion accepet tab name, tab will hide if this function return ni.")
@@ -352,12 +326,6 @@ group.  Notice that it is better that a buffer belongs to one group.")
   "Function to adjust buffer order after switch tab.
 Default is `awesome-tab-adjust-buffer-order', you can write your own rule.")
 
-(defvar awesome-tab-ace-1-key-seqs nil
-  "List of 1-key sequences used by `awesome-tab-ace-jump'")
-
-(defvar awesome-tab-ace-2-key-seqs nil
-  "List of 2-key sequences used by `awesome-tab-ace-jump'")
-
 ;;; Misc.
 ;;
 (eval-and-compile
@@ -380,13 +348,6 @@ When not specified, ELLIPSIS defaults to ‘...’."
   (if (> (length s) len)
       (format "%s%s" (substring s 0 (- len (length ellipsis))) ellipsis)
     (concat s (make-string (- len (length s)) ? ))))
-
-(defun awesome-tab-refresh-display ()
-  "Refresh the display of tabs. Put this in your user-defined hooks to
-make sure the face colors are always right."
-  (interactive)
-  (awesome-tab-map-tabsets (lambda (x) (awesome-tab-set-template x nil)))
-  (awesome-tab-display-update))
 
 ;;; Tab and tab set
 ;;
@@ -619,23 +580,14 @@ current cached copy."
 ;;
 
 (defface awesome-tab-unselected
-  '((t (:height 130)))
+  '((t
+     (:height 130)))
   "Face used for unselected tabs."
   :group 'awesome-tab)
 
 (defface awesome-tab-selected
   '((t (:height 130)))
   "Face used for the selected tab."
-  :group 'awesome-tab)
-
-(defface awesome-tab-unselected-ace-str
-  '((t (:inherit 'awesome-tab-unselected)))
-  "Face used for ace string on unselected tabs."
-  :group 'awesome-tab)
-
-(defface awesome-tab-selected-ace-str
-  '((t (:inherit 'awesome-tab-selected)))
-  "Face used for ace string on selected tabs."
   :group 'awesome-tab)
 
 ;;; Tabs
@@ -675,7 +627,6 @@ influence of C1 on the result."
               ((and bg-unspecified (eq bg-mode 'dark)) "gray20")
               ((and bg-unspecified (eq bg-mode 'light)) "gray80")
               (t (face-background 'default))))
-         (fg-error (face-foreground 'error))
          ;; for light themes
          (bg-dark (awesome-tab-color-blend black bg 0.1))
          (bg-more-dark (awesome-tab-color-blend black bg 0.25))
@@ -707,11 +658,7 @@ influence of C1 on the result."
                           :foreground fg-light)
       (set-face-attribute 'awesome-tab-selected nil
                           :background bg-more-dark
-                          :foreground fg-more-dark)))
-    (set-face-attribute 'awesome-tab-unselected-ace-str nil
-                        :foreground fg-error)
-    (set-face-attribute 'awesome-tab-selected-ace-str nil
-                        :foreground fg-error)))
+                          :foreground fg-more-dark)))))
 
 (defun awesome-tab-line-format (tabset)
   "Return the `header-line-format' value to display TABSET."
@@ -906,7 +853,7 @@ Depend on the setting of the option `awesome-tab-cycle-scope'."
   (let ((km (make-sparse-keymap)))
     (define-key km awesome-tab-prefix-key awesome-tab-prefix-map)
     km)
-  "Keymap to use in Awesome-Tab mode.")
+  "Keymap to use in  Awesome-Tab mode.")
 
 (defvar awesome-tab--global-hlf nil)
 
@@ -1481,29 +1428,14 @@ element."
   "Return a label for TAB.
 That is, a string used to represent it on the tab bar."
   (let* ((is-active-tab (awesome-tab-selected-p tab (awesome-tab-current-tabset)))
-         (tab-face (if is-active-tab 'awesome-tab-selected 'awesome-tab-unselected))
-         (ace-str-face (if is-active-tab 'awesome-tab-selected-ace-str
-                         'awesome-tab-unselected-ace-str))
-         (current-buffer-index
-          (cl-position tab (awesome-tab-view awesome-tab-current-tabset)))
-         (ace-str (if (and awesome-tab-ace-state (boundp ace-strs))
-                      (elt ace-strs current-buffer-index) ""))
-         (ace-state awesome-tab-ace-state))
+         (tab-face (if is-active-tab 'awesome-tab-selected 'awesome-tab-unselected)))
     (concat
      ;; Tab left edge.
      (awesome-tab-separator-render awesome-tab-style-left tab-face)
-     ;; Ace string.
-     (when (and ace-state (eq awesome-tab-ace-str-style 'left))
-       (propertize (format "%s " ace-str) 'face ace-str-face))
      ;; Tab icon.
-     (if (and ace-state (eq awesome-tab-ace-str-style 'replace-icon))
-         (propertize (format "%s " ace-str) 'face ace-str-face)
-       (awesome-tab-icon-for-tab tab tab-face))
+     (awesome-tab-icon-for-tab tab tab-face)
      ;; Tab label.
      (propertize (awesome-tab-tab-name tab) 'face tab-face)
-     ;; Ace string.
-     (when (and ace-state (eq awesome-tab-ace-str-style 'right))
-       (propertize (format " %s" ace-str) 'face ace-str-face))
      ;; Tab right edge.
      (awesome-tab-separator-render awesome-tab-style-right tab-face)
      )))
@@ -1815,7 +1747,8 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
          )))
     ;; Switch to next group if last file killed.
     (when (equal (length extension-names) 1)
-      (awesome-tab-forward-group))))
+      (awesome-tab-forward-group))
+    ))
 
 (defun awesome-tab-select-visible-nth-tab (tab-index)
   "Select visible tab with `tab-index'.
@@ -1847,71 +1780,6 @@ not the actual logical index position of the current group."
          (key-desc (key-description key)))
     (awesome-tab-select-visible-nth-tab
      (string-to-number (nth 1 (split-string key-desc "-"))))))
-
-(defun awesome-tab-build-ace-strs (len nkeys)
-  "Build strings for `awesome-tab-ace-jump'.
-LEN is the number of strings, should be the number of current visible
-tabs. NKEYS should be 1 or 2."
-  (let ((i 0)
-        (str nil)
-        (seqs (cond
-               ((= nkeys 1) awesome-tab-ace-1-key-seqs)
-               ((= nkeys 2) awesome-tab-ace-2-key-seqs)
-               ((>= nkeys 3) (error "NKEYS should be 1 or 2")))))
-    (while (< i len)
-      (push (apply #'string (elt seqs i)) str)
-      (setq i (1+ i)))
-    (nreverse str)))
-
-(defun awesome-tab-ace-jump ()
-  "Jump to a visible tab by 1 or 2 chars."
-  (interactive)
-  (let* ((visible-tabs (awesome-tab-view awesome-tab-current-tabset))
-         (n-visible-tabs (length visible-tabs))
-         (done-flag nil)
-         (i 0)
-         (j 0)
-         (char 0)
-         (chars nil)
-         (rangel 0)
-         (rangeu n-visible-tabs)
-         (nchars (length awesome-tab-ace-keys))
-         (nkeys (cond
-                 ((<= n-visible-tabs nchars) 1)
-                 ((<= n-visible-tabs (* nchars nchars)) 2)
-                 (t (error "Too many visible tabs."))))
-         (visible-seqs
-          (cl-subseq
-           (symbol-value
-            (intern
-             (concat "awesome-tab-ace-" (number-to-string nkeys) "-key-seqs")))
-           0 n-visible-tabs))
-         (ace-strs (awesome-tab-build-ace-strs n-visible-tabs nkeys)))
-    (setq awesome-tab-ace-state t)
-    (awesome-tab-refresh-display)
-    (while (< i nkeys)
-      (while (not done-flag)
-        (setq char (read-key (format "Char %d:" (1+ i))))
-        (let ((current-chars (mapcar (lambda (x) (nth i x)) visible-seqs)))
-          (when (member char current-chars)
-            (setq done-flag t)
-            (setq rangel (cl-position char current-chars))
-            (setq rangeu (1- (- n-visible-tabs (cl-position char (nreverse current-chars)))))
-            (while (< j rangel)
-              (setcar (nthcdr j visible-seqs) nil)
-              (setq j (1+ j)))
-            (setq j (1+ rangeu))
-            (while (< j n-visible-tabs)
-              (setcar (nthcdr j visible-seqs) nil)
-              (setq j (1+ j)))
-            (setq j 0))))
-      (setq done-flag nil)
-      (setq i (1+ i))
-      (setq ace-strs (awesome-tab-build-ace-strs n-visible-tabs nkeys))
-      (awesome-tab-refresh-display))
-    (setq awesome-tab-ace-state nil)
-    (awesome-tab-refresh-display)
-    (awesome-tab-buffer-select-tab (nth rangel visible-tabs))))
 
 ;;;;;;;;;;;;;;;;;;;;;;; Utils functions ;;;;;;;;;;;;;;;;;;;;;;;
 (defun awesome-tab-get-groups ()
