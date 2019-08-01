@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 5.2
-;; Last-Updated: 2019-08-01 21:39:02
+;; Version: 5.3
+;; Last-Updated: 2019-08-01 21:57:29
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -94,6 +94,7 @@
 ;;
 ;; 2019/08/01
 ;;      * Quit when user press Ctrl + g.
+;;      * Make ace string use foreground same as `font-lock-function-name-face'.
 ;;
 ;; 2019/07/18
 ;;      * Use ema2159's way to render icon.
@@ -632,12 +633,12 @@ current cached copy."
   :group 'awesome-tab)
 
 (defface awesome-tab-unselected-ace-str
-  '((t (:inherit 'awesome-tab-unselected)))
+  '((t (:height 130)))
   "Face used for ace string on unselected tabs."
   :group 'awesome-tab)
 
 (defface awesome-tab-selected-ace-str
-  '((t (:inherit 'awesome-tab-selected)))
+  '((t (:height 130)))
   "Face used for ace string on selected tabs."
   :group 'awesome-tab)
 
@@ -678,17 +679,21 @@ influence of C1 on the result."
               ((and bg-unspecified (eq bg-mode 'dark)) "gray20")
               ((and bg-unspecified (eq bg-mode 'light)) "gray80")
               (t (face-background 'default))))
-         (fg-error (face-foreground 'error))
+         ;; Ace string foreground.
+         (ace-str-foreground (face-foreground 'font-lock-function-name-face))
          ;; for light themes
          (bg-dark (awesome-tab-color-blend black bg 0.1))
          (bg-more-dark (awesome-tab-color-blend black bg 0.25))
          (fg-dark (awesome-tab-color-blend fg bg-dark 0.7))
          (fg-more-dark (awesome-tab-color-blend black fg 0.3))
+         (fg-ace-dark (awesome-tab-color-blend black fg 0.1))
          ;; for dark themes
          (bg-light (awesome-tab-color-blend white bg 0.1))
          (bg-more-light (awesome-tab-color-blend white bg 0.2))
          (fg-light (awesome-tab-color-blend fg bg 0.7))
-         (fg-more-light (awesome-tab-color-blend white fg 0.3)))
+         (fg-more-light (awesome-tab-color-blend white fg 0.3))
+         (fg-ace-light (awesome-tab-color-blend white fg 0.1))
+         )
     ;; Because tab separator is XPM object, we need re-init those XPM object after change theme.
     (awesome-tab-separator-init-vars)
     ;; Make `header-line' background same as default face.
@@ -703,18 +708,27 @@ influence of C1 on the result."
                           :foreground fg-dark)
       (set-face-attribute 'awesome-tab-selected nil
                           :background bg-more-light
-                          :foreground fg-more-light))
+                          :foreground fg-more-light)
+      (set-face-attribute 'awesome-tab-unselected-ace-str nil
+                          :background bg-light
+                          :foreground ace-str-foreground)
+      (set-face-attribute 'awesome-tab-selected-ace-str nil
+                          :background bg-more-light
+                          :foreground ace-str-foreground))
      (t
       (set-face-attribute 'awesome-tab-unselected nil
                           :background bg-dark
                           :foreground fg-light)
       (set-face-attribute 'awesome-tab-selected nil
                           :background bg-more-dark
-                          :foreground fg-more-dark)))
-    (set-face-attribute 'awesome-tab-unselected-ace-str nil
-                        :foreground fg-error)
-    (set-face-attribute 'awesome-tab-selected-ace-str nil
-                        :foreground fg-error)))
+                          :foreground fg-more-dark)
+      (set-face-attribute 'awesome-tab-unselected-ace-str nil
+                          :background bg-dark
+                          :foreground ace-str-foreground)
+      (set-face-attribute 'awesome-tab-selected-ace-str nil
+                          :background bg-more-dark
+                          :foreground ace-str-foreground)))
+    ))
 
 (defun awesome-tab-line-format (tabset)
   "Return the `header-line-format' value to display TABSET."
@@ -1893,7 +1907,7 @@ tabs. NKEYS should be 1 or 2."
       (awesome-tab-refresh-display)
       (while (< i nkeys)
         (while (not done-flag)
-          (setq char (with-local-quit (read-key (format "Char %d:" (1+ i)))))
+          (setq char (with-local-quit (read-key (format "Awesome Tab Ace Jump (%d):" (1+ i)))))
           (if (not (eq char 7))
               (let ((current-chars (mapcar #'car visible-seqs)))
                 (when (member char current-chars)
