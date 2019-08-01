@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 5.4
-;; Last-Updated: 2019-08-01 22:44:58
+;; Version: 5.5
+;; Last-Updated: 2019-08-02 07:34:18
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -91,6 +91,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/08/02
+;;      * Refactroy `awesome-tab-ace-jump'.
 ;;
 ;; 2019/08/01
 ;;      * Quit when user press Ctrl + g.
@@ -1871,53 +1874,49 @@ tabs. NKEYS should be 1 or 2."
   (interactive)
   (catch 'quit
     (let* ((visible-tabs (awesome-tab-view awesome-tab-current-tabset))
-           (n-visible-tabs (length visible-tabs))
-           (done-flag nil)
-           (i 0)
+           (visible-tabs-length (length visible-tabs))
+           done-flag
+           chars
            (j 0)
-           (char 0)
-           (chars nil)
            (rangel 0)
-           (rangeu n-visible-tabs)
+           (rangeu visible-tabs-length)
            (nchars (length awesome-tab-ace-keys))
            (nkeys (cond
-                   ((<= n-visible-tabs nchars) 1)
-                   ((<= n-visible-tabs (* nchars nchars)) 2)
+                   ((<= visible-tabs-length nchars) 1)
+                   ((<= visible-tabs-length (* nchars nchars)) 2)
                    (t (error "Too many visible tabs."))))
            (visible-seqs
             (cl-subseq
              (symbol-value
               (intern
                (concat "awesome-tab-ace-" (number-to-string nkeys) "-key-seqs")))
-             0 n-visible-tabs))
-           (ace-strs (awesome-tab-build-ace-strs n-visible-tabs nkeys visible-seqs)))
+             0 visible-tabs-length))
+           (ace-strs (awesome-tab-build-ace-strs visible-tabs-length nkeys visible-seqs)))
       (setq awesome-tab-ace-state t)
       (awesome-tab-refresh-display)
-      (while (< i nkeys)
+      (dotimes (i nkeys)
         (while (not done-flag)
-          (setq char (with-local-quit (read-key (format "Awesome Tab Ace Jump (%d):" (1+ i)))))
-          (if (not (eq char 7))
-              (let ((current-chars (mapcar #'car visible-seqs)))
-                (when (member char current-chars)
-                  (setq done-flag t)
-                  (setq rangel (cl-position char current-chars))
-                  (setq rangeu (1- (- n-visible-tabs (cl-position char (nreverse current-chars)))))
-                  (while (< j rangel)
-                    (setcar (nthcdr j visible-seqs) nil)
-                    (setq j (1+ j)))
-                  (setq j (1+ rangeu))
-                  (while (< j n-visible-tabs)
-                    (setcar (nthcdr j visible-seqs) nil)
-                    (setq j (1+ j)))
-                  (setq j 0)))
-            ;; Quit when user press Ctrl + g.
-            (setq awesome-tab-ace-state nil)
-            (awesome-tab-refresh-display)
-            (throw 'quit nil)))
+          (let ((char (with-local-quit (read-key (format "Awesome Tab Ace Jump (%d):" (1+ i))))))
+            (if (not (eq char 7))       ;7 mean Ctrl + G
+                (let ((current-chars (mapcar #'car visible-seqs)))
+                  (when (member char current-chars)
+                    (setq done-flag t)
+                    (setq rangel (cl-position char current-chars))
+                    (setq rangeu (1- (- visible-tabs-length (cl-position char (nreverse current-chars)))))
+                    (dotimes (index rangel)
+                      (setcar (nthcdr index visible-seqs) nil))
+                    (setq j (1+ rangeu))
+                    (while (< j visible-tabs-length)
+                      (setcar (nthcdr j visible-seqs) nil)
+                      (setq j (1+ j)))
+                    (setq j 0)))
+              ;; Quit when user press Ctrl + g.
+              (setq awesome-tab-ace-state nil)
+              (awesome-tab-refresh-display)
+              (throw 'quit nil))))
         (setq done-flag nil)
-        (setq i (1+ i))
         (setq visible-seqs (mapcar #'cdr visible-seqs))
-        (setq ace-strs (awesome-tab-build-ace-strs n-visible-tabs nkeys visible-seqs))
+        (setq ace-strs (awesome-tab-build-ace-strs visible-tabs-length nkeys visible-seqs))
         (awesome-tab-refresh-display))
       (setq awesome-tab-ace-state nil)
       (awesome-tab-refresh-display)
