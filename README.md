@@ -83,13 +83,7 @@ git clone --depth=1 https://github.com/manateelazycat/awesome-tab.git
 
 Call command ```awesome-tab-ace-jump```, and a sequence of 1 or 2 characters will show on tabs in the current tab group. Type them to jump to that tab.
 
-Customize ```awesome-tab-ace-keys``` to specify the used characters. The default value is home row keys, and most of the time you can switch to a tab within 1 char. If you often have more than 9 visible tabs, you can do this:
-
-```Elisp
-(customize-set-variable awesome-tab-ace-keys '(?d ?f ?j ?k))
-```
-
-Then you can access up to 16 tabs within 2 keystrokes of index/middle fingers.
+Customize ```awesome-tab-ace-keys``` to specify the used characters. The default value is home row keys, and most of the time you can switch to a tab within 1 char. 
 
 Customize ```awesome-tab-ace-str-style``` to specify the position of ace sequences on the tab. You can choose ```'replace-icon```, ```'left``` or ```'right```.
 
