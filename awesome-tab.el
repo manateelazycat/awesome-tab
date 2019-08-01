@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 5.3
-;; Last-Updated: 2019-08-01 21:57:29
+;; Version: 5.4
+;; Last-Updated: 2019-08-01 22:44:58
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -95,6 +95,7 @@
 ;; 2019/08/01
 ;;      * Quit when user press Ctrl + g.
 ;;      * Make ace string use foreground same as `font-lock-function-name-face'.
+;;      * Remove `awesome-tab-prefix-map'
 ;;
 ;; 2019/07/18
 ;;      * Use ema2159's way to render icon.
@@ -907,21 +908,8 @@ Depend on the setting of the option `awesome-tab-cycle-scope'."
 
 ;;; Awesome-Tab mode
 ;;
-(defvar awesome-tab-prefix-key [(control ?c)]
-  "The common prefix key used in Awesome-Tab mode.")
-
-(defvar awesome-tab-prefix-map
-  (let ((km (make-sparse-keymap)))
-    (define-key km [(control left)]  'awesome-tab-backward)
-    (define-key km [(control right)] 'awesome-tab-forward)
-    (define-key km [(control up)]    'awesome-tab-backward-group)
-    (define-key km [(control down)]  'awesome-tab-forward-group)
-    km)
-  "The key bindings provided in Awesome-Tab mode.")
-
 (defvar awesome-tab-mode-map
   (let ((km (make-sparse-keymap)))
-    (define-key km awesome-tab-prefix-key awesome-tab-prefix-map)
     km)
   "Keymap to use in Awesome-Tab mode.")
 
