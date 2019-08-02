@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 5.7
-;; Last-Updated: 2019-08-02 16:14:50
+;; Version: 5.8
+;; Last-Updated: 2019-08-03 07:37:16
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -91,6 +91,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/08/03
+;;      * Adjust default value of `awesome-tab-ace-quit-keys'.
 ;;
 ;; 2019/08/02
 ;;      * Refactroy `awesome-tab-ace-jump'.
@@ -324,7 +327,7 @@ Set this option with nil if you don't like icon in tab."
              (setq awesome-tab-ace-1-key-seqs (nreverse 1k-seqs))))
   :type '(repeat :tag "Keys" character))
 
-(defcustom awesome-tab-ace-quit-keys '(?\C-g)
+(defcustom awesome-tab-ace-quit-keys '(?\C-g ?q ?\s)
   "Keys used to quit from ace jumping."
   :group 'awesome-tab
   :type '(repeat :tag "Keys" character))

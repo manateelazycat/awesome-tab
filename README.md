@@ -87,10 +87,10 @@ Customize ```awesome-tab-ace-keys``` to specify the used characters. The default
 
 Customize ```awesome-tab-ace-str-style``` to specify the position of ace sequences on the tab. You can choose ```'replace-icon```, ```'left``` or ```'right```.
 
-Customize ```awesome-tab-ace-quit-keys``` to specify keys used to quit from ace jumping. The default value is ```C-g```. You may want to also use `q` and `SPC`, then you can do this:
+Customize ```awesome-tab-ace-quit-keys``` to specify keys used to quit from ace jumping. The default value is ```'(?\C-g ?q ?\s)```, you can press ```C-g``` ```q``` or ````SPC``` to quit from ace jumping. Anyway, you can customize any other keys you like.
 
 ```Elisp
-(setq awesome-tab-ace-quit-keys '(?\C-g ?q ?\s))
+(setq awesome-tab-ace-quit-keys '(?\C-g))
 ```
 
 If you are a hydra user, you can use this to do consecutive moves between tabs and windows:
