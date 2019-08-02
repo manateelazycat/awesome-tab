@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 5.5
-;; Last-Updated: 2019-08-02 07:34:18
+;; Version: 5.7
+;; Last-Updated: 2019-08-02 16:14:50
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -94,6 +94,8 @@
 ;;
 ;; 2019/08/02
 ;;      * Refactroy `awesome-tab-ace-jump'.
+;;      * Refactory variable name.
+;;      * Remove `awesome-tab-adjust-buffer-order' since `awesome-tab-ace-jump' is enough.
 ;;
 ;; 2019/08/01
 ;;      * Quit when user press Ctrl + g.
@@ -360,10 +362,6 @@ buffers.")
   "Function that gives the group names the current buffer belongs to.
 It must return a list of group names, or nil if the buffer has no
 group.  Notice that it is better that a buffer belongs to one group.")
-
-(defvar awesome-tab-adjust-buffer-order-function 'awesome-tab-adjust-buffer-order
-  "Function to adjust buffer order after switch tab.
-Default is `awesome-tab-adjust-buffer-order', you can write your own rule.")
 
 (defvar awesome-tab-ace-1-key-seqs nil
   "List of 1-key sequences used by `awesome-tab-ace-jump'")
@@ -1507,16 +1505,16 @@ That is, a string used to represent it on the tab bar."
      (awesome-tab-separator-render awesome-tab-style-left tab-face)
      ;; Ace string.
      (when (and ace-state (eq awesome-tab-ace-str-style 'left))
-       (propertize (format "%s " ace-str) 'face ace-str-face))
+       (propertize ace-str 'face ace-str-face))
      ;; Tab icon.
      (if (and ace-state (eq awesome-tab-ace-str-style 'replace-icon))
-         (propertize (format "%s " ace-str) 'face ace-str-face)
+         (propertize ace-str 'face ace-str-face)
        (awesome-tab-icon-for-tab tab tab-face))
      ;; Tab label.
      (propertize (awesome-tab-tab-name tab) 'face tab-face)
      ;; Ace string.
      (when (and ace-state (eq awesome-tab-ace-str-style 'right))
-       (propertize (format " %s" ace-str) 'face ace-str-face))
+       (propertize ace-str 'face ace-str-face))
      ;; Tab right edge.
      (awesome-tab-separator-render awesome-tab-style-right tab-face)
      )))
@@ -1861,13 +1859,13 @@ not the actual logical index position of the current group."
     (awesome-tab-select-visible-nth-tab
      (string-to-number (nth 1 (split-string key-desc "-"))))))
 
-(defun awesome-tab-build-ace-strs (len nkeys seqs)
+(defun awesome-tab-build-ace-strs (len key-number seqs)
   "Build strings for `awesome-tab-ace-jump'.
 LEN is the number of strings, should be the number of current visible
 tabs. NKEYS should be 1 or 2."
   (let ((i 0)
         (str nil))
-    (when (>= nkeys 3)
+    (when (>= key-number 3)
       (error "NKEYS should be 1 or 2"))
     (while (< i len)
       (push (apply #'string (elt seqs i)) str)
@@ -1881,51 +1879,50 @@ tabs. NKEYS should be 1 or 2."
     (let* ((visible-tabs (awesome-tab-view awesome-tab-current-tabset))
            (visible-tabs-length (length visible-tabs))
            done-flag
-           chars
-           (j 0)
-           (rangel 0)
-           (rangeu visible-tabs-length)
-           (nchars (length awesome-tab-ace-keys))
-           (nkeys (cond
-                   ((<= visible-tabs-length nchars) 1)
-                   ((<= visible-tabs-length (* nchars nchars)) 2)
-                   (t (error "Too many visible tabs."))))
+           (lower-bound 0)
+           (upper-bound visible-tabs-length)
+           (ace-keys (length awesome-tab-ace-keys))
+           (key-number (cond
+                        ((<= visible-tabs-length ace-keys) 1)
+                        ((<= visible-tabs-length (* ace-keys ace-keys)) 2)
+                        (t (error "Too many visible tabs."))))
            (visible-seqs
             (cl-subseq
              (symbol-value
               (intern
-               (concat "awesome-tab-ace-" (number-to-string nkeys) "-key-seqs")))
+               (concat "awesome-tab-ace-" (number-to-string key-number) "-key-seqs")))
              0 visible-tabs-length))
-           (ace-strs (awesome-tab-build-ace-strs visible-tabs-length nkeys visible-seqs)))
+           (ace-strs (awesome-tab-build-ace-strs visible-tabs-length key-number visible-seqs)))
       (setq awesome-tab-ace-state t)
       (awesome-tab-refresh-display)
-      (dotimes (i nkeys)
+      (dotimes (i key-number)
         (while (not done-flag)
           (let ((char (with-local-quit (read-key (format "Awesome Tab Ace Jump (%d):" (1+ i))))))
             (if (not (member char awesome-tab-ace-quit-keys))
                 (let ((current-chars (mapcar #'car visible-seqs)))
                   (when (member char current-chars)
                     (setq done-flag t)
-                    (setq rangel (cl-position char current-chars))
-                    (setq rangeu (1- (- visible-tabs-length (cl-position char (nreverse current-chars)))))
-                    (dotimes (index rangel)
-                      (setcar (nthcdr index visible-seqs) nil))
-                    (setq j (1+ rangeu))
-                    (while (< j visible-tabs-length)
-                      (setcar (nthcdr j visible-seqs) nil)
-                      (setq j (1+ j)))
-                    (setq j 0)))
+                    (setq lower-bound (cl-position char current-chars))
+                    (setq upper-bound (1- (- visible-tabs-length (cl-position char (nreverse current-chars)))))
+                    (dotimes (lower-index lower-bound)
+                      (setcar (nthcdr lower-index visible-seqs) nil))
+                    (setq upper-index (1+ upper-bound))
+                    (while (< upper-index visible-tabs-length)
+                      (setcar (nthcdr upper-index visible-seqs) nil)
+                      (setq upper-index (1+ upper-index)))
+                    (setq upper-index 0)
+                    ))
               ;; Quit when user press Ctrl + g.
               (setq awesome-tab-ace-state nil)
               (awesome-tab-refresh-display)
               (throw 'quit nil))))
         (setq done-flag nil)
         (setq visible-seqs (mapcar #'cdr visible-seqs))
-        (setq ace-strs (awesome-tab-build-ace-strs visible-tabs-length nkeys visible-seqs))
+        (setq ace-strs (awesome-tab-build-ace-strs visible-tabs-length key-number visible-seqs))
         (awesome-tab-refresh-display))
       (setq awesome-tab-ace-state nil)
       (awesome-tab-refresh-display)
-      (awesome-tab-buffer-select-tab (nth rangel visible-tabs)))))
+      (awesome-tab-buffer-select-tab (nth lower-bound visible-tabs)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;; Utils functions ;;;;;;;;;;;;;;;;;;;;;;;
 (defun awesome-tab-get-groups ()
@@ -2087,53 +2084,6 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
 (defun awesome-tab-insert-before (list bef-el el)
   "Insert EL before BEF-EL in LIST."
   (nreverse (awesome-tab-insert-after (nreverse list) bef-el el)))
-
-(defun awesome-tab-adjust-buffer-order ()
-  "Put the two buffers switched to the adjacent position after current buffer changed."
-  ;; Don't trigger by awesome-tab command, it's annoying.
-  ;; This feature should trigger by search plugins, such as ibuffer, helm or ivy.
-  (unless (or (string-prefix-p "awesome-tab" (format "%s" this-command))
-              (string-prefix-p "mouse-drag-header-line" (format "%s" this-command))
-              (string-prefix-p "(lambda (event) (interactive e) (awesome-tab-buffer-select-tab" (format "%s" this-command)))
-    ;; Just continue when buffer changed.
-    (when (and (not (eq (current-buffer) awesome-tab-last-focus-buffer))
-               (not (minibufferp)))
-      (let* ((current (current-buffer))
-             (previous awesome-tab-last-focus-buffer)
-             (current-group (first (funcall awesome-tab-buffer-groups-function))))
-        ;; Record last focus buffer.
-        (setq awesome-tab-last-focus-buffer current)
-
-        ;; Just continue if two buffers are in same group.
-        (when (string= current-group awesome-tab-last-focus-buffer-group)
-          (let* ((bufset (awesome-tab-get-tabset current-group))
-                 (current-group-tabs (awesome-tab-tabs bufset))
-                 (current-group-buffers (mapcar 'car current-group-tabs))
-                 (current-buffer-index (cl-position current current-group-buffers))
-                 (previous-buffer-index (cl-position previous current-group-buffers)))
-
-            ;; If the two tabs are not adjacent, swap the positions of the two tabs.
-            (when (and current-buffer-index
-                       previous-buffer-index
-                       (> (abs (- current-buffer-index previous-buffer-index)) 1))
-              (let* ((copy-group-tabs (copy-list current-group-tabs))
-                     (previous-tab (nth previous-buffer-index copy-group-tabs))
-                     (current-tab (nth current-buffer-index copy-group-tabs))
-                     (base-group-tabs (awesome-tab-remove-nth-element previous-buffer-index copy-group-tabs))
-                     (new-group-tabs
-                      (if (> current-buffer-index previous-buffer-index)
-                          (awesome-tab-insert-before base-group-tabs current-tab previous-tab)
-                        (awesome-tab-insert-after base-group-tabs current-tab previous-tab))))
-                (set bufset new-group-tabs)
-                (awesome-tab-set-template bufset nil)
-                (awesome-tab-display-update)
-                ))))
-
-        ;; Update the group name of the last access tab.
-        (setq awesome-tab-last-focus-buffer-group current-group)
-        ))))
-
-(add-hook 'post-command-hook awesome-tab-adjust-buffer-order-function)
 
 (provide 'awesome-tab)
 
