@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 5.6
-;; Last-Updated: 2019-08-02 16:08:33
+;; Version: 5.7
+;; Last-Updated: 2019-08-02 16:14:50
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -95,6 +95,7 @@
 ;; 2019/08/02
 ;;      * Refactroy `awesome-tab-ace-jump'.
 ;;      * Refactory variable name.
+;;      * Remove `awesome-tab-adjust-buffer-order' since `awesome-tab-ace-jump' is enough.
 ;;
 ;; 2019/08/01
 ;;      * Quit when user press Ctrl + g.
@@ -356,10 +357,6 @@ buffers.")
   "Function that gives the group names the current buffer belongs to.
 It must return a list of group names, or nil if the buffer has no
 group.  Notice that it is better that a buffer belongs to one group.")
-
-(defvar awesome-tab-adjust-buffer-order-function 'awesome-tab-adjust-buffer-order
-  "Function to adjust buffer order after switch tab.
-Default is `awesome-tab-adjust-buffer-order', you can write your own rule.")
 
 (defvar awesome-tab-ace-1-key-seqs nil
   "List of 1-key sequences used by `awesome-tab-ace-jump'")
@@ -2083,53 +2080,6 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
 (defun awesome-tab-insert-before (list bef-el el)
   "Insert EL before BEF-EL in LIST."
   (nreverse (awesome-tab-insert-after (nreverse list) bef-el el)))
-
-(defun awesome-tab-adjust-buffer-order ()
-  "Put the two buffers switched to the adjacent position after current buffer changed."
-  ;; Don't trigger by awesome-tab command, it's annoying.
-  ;; This feature should trigger by search plugins, such as ibuffer, helm or ivy.
-  (unless (or (string-prefix-p "awesome-tab" (format "%s" this-command))
-              (string-prefix-p "mouse-drag-header-line" (format "%s" this-command))
-              (string-prefix-p "(lambda (event) (interactive e) (awesome-tab-buffer-select-tab" (format "%s" this-command)))
-    ;; Just continue when buffer changed.
-    (when (and (not (eq (current-buffer) awesome-tab-last-focus-buffer))
-               (not (minibufferp)))
-      (let* ((current (current-buffer))
-             (previous awesome-tab-last-focus-buffer)
-             (current-group (first (funcall awesome-tab-buffer-groups-function))))
-        ;; Record last focus buffer.
-        (setq awesome-tab-last-focus-buffer current)
-
-        ;; Just continue if two buffers are in same group.
-        (when (string= current-group awesome-tab-last-focus-buffer-group)
-          (let* ((bufset (awesome-tab-get-tabset current-group))
-                 (current-group-tabs (awesome-tab-tabs bufset))
-                 (current-group-buffers (mapcar 'car current-group-tabs))
-                 (current-buffer-index (cl-position current current-group-buffers))
-                 (previous-buffer-index (cl-position previous current-group-buffers)))
-
-            ;; If the two tabs are not adjacent, swap the positions of the two tabs.
-            (when (and current-buffer-index
-                       previous-buffer-index
-                       (> (abs (- current-buffer-index previous-buffer-index)) 1))
-              (let* ((copy-group-tabs (copy-list current-group-tabs))
-                     (previous-tab (nth previous-buffer-index copy-group-tabs))
-                     (current-tab (nth current-buffer-index copy-group-tabs))
-                     (base-group-tabs (awesome-tab-remove-nth-element previous-buffer-index copy-group-tabs))
-                     (new-group-tabs
-                      (if (> current-buffer-index previous-buffer-index)
-                          (awesome-tab-insert-before base-group-tabs current-tab previous-tab)
-                        (awesome-tab-insert-after base-group-tabs current-tab previous-tab))))
-                (set bufset new-group-tabs)
-                (awesome-tab-set-template bufset nil)
-                (awesome-tab-display-update)
-                ))))
-
-        ;; Update the group name of the last access tab.
-        (setq awesome-tab-last-focus-buffer-group current-group)
-        ))))
-
-(add-hook 'post-command-hook awesome-tab-adjust-buffer-order-function)
 
 (provide 'awesome-tab)
 
