@@ -322,6 +322,11 @@ Set this option with nil if you don't like icon in tab."
              (setq awesome-tab-ace-1-key-seqs (nreverse 1k-seqs))))
   :type '(repeat :tag "Keys" character))
 
+(defcustom awesome-tab-ace-quit-keys '(?\C-g)
+  "Keys used to quit from ace jumping."
+  :group 'awesome-tab
+  :type '(repeat :tag "Keys" character))
+
 (defcustom awesome-tab-ace-str-style 'replace-icon
   "Position of ace strings."
   :group 'awesome-tab
@@ -1897,7 +1902,7 @@ tabs. NKEYS should be 1 or 2."
       (dotimes (i nkeys)
         (while (not done-flag)
           (let ((char (with-local-quit (read-key (format "Awesome Tab Ace Jump (%d):" (1+ i))))))
-            (if (not (eq char ?\a))     ; ?\a is equal Ctrl + g
+            (if (not (member char awesome-tab-ace-quit-keys))
                 (let ((current-chars (mapcar #'car visible-seqs)))
                   (when (member char current-chars)
                     (setq done-flag t)
