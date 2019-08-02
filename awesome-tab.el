@@ -1897,7 +1897,7 @@ tabs. NKEYS should be 1 or 2."
       (dotimes (i nkeys)
         (while (not done-flag)
           (let ((char (with-local-quit (read-key (format "Awesome Tab Ace Jump (%d):" (1+ i))))))
-            (if (not (eq char 7))       ;7 mean Ctrl + G
+            (if (not (eq char ?\a))     ; ?\a is equal Ctrl + g
                 (let ((current-chars (mapcar #'car visible-seqs)))
                   (when (member char current-chars)
                     (setq done-flag t)
