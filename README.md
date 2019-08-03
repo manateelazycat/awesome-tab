@@ -79,6 +79,7 @@ git clone --depth=1 https://github.com/manateelazycat/awesome-tab.git
 | awesome-tab-move-current-tab-to-right           | Move current tab to right                                                             |
 | awesome-tab-move-current-tab-to-beg             | Move current tab to the first position                                                |
 | awesome-tab-select-visible-tab                  | Select visible tab with given index                                                   |
+| awesome-tab-ace-jump                            | Jump to visible tab with 1 or 2 characters press                                      |
 
 *Tip:* When jumping to a tab far away, think if it will be frequently used. If the answer is yes, move it to the first position. By doing so you keep all your frequently used tabs to be in the first screen, so you have easy access to them.
 
