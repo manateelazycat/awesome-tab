@@ -77,13 +77,16 @@ git clone --depth=1 https://github.com/manateelazycat/awesome-tab.git
 | awesome-tab-keep-match-buffers-in-current-group | Keep buffers match extension of current group                                         |
 | awesome-tab-move-current-tab-to-left            | Move current tab to left                                                              |
 | awesome-tab-move-current-tab-to-right           | Move current tab to right                                                             |
+| awesome-tab-move-current-tab-to-beg             | Move current tab to the first position                                                |
 | awesome-tab-select-visible-tab                  | Select visible tab with given index                                                   |
+
+*Tip:* When jumping to a tab far away, think if it will be frequently used. If the answer is yes, move it to the first position. By doing so you keep all your frequently used tabs to be in the first screen, so you have easy access to them.
 
 #### Ace jump
 
 Call command ```awesome-tab-ace-jump```, and a sequence of 1 or 2 characters will show on tabs in the current tab group. Type them to jump to that tab.
 
-Customize ```awesome-tab-ace-keys``` to specify the used characters. The default value is home row keys, and most of the time you can switch to a tab within 1 char. 
+Customize ```awesome-tab-ace-keys``` to specify the used characters. The default value is home row keys, and most of the time you can switch to a tab within 1 char.
 
 Customize ```awesome-tab-ace-str-style``` to specify the position of ace sequences on the tab. You can choose ```'replace-icon```, ```'left``` or ```'right```.
 
