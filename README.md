@@ -77,7 +77,10 @@ git clone --depth=1 https://github.com/manateelazycat/awesome-tab.git
 | awesome-tab-keep-match-buffers-in-current-group | Keep buffers match extension of current group                                         |
 | awesome-tab-move-current-tab-to-left            | Move current tab to left                                                              |
 | awesome-tab-move-current-tab-to-right           | Move current tab to right                                                             |
+| awesome-tab-move-current-tab-to-beg             | Move current tab to the first position                                                |
 | awesome-tab-select-visible-tab                  | Select visible tab with given index                                                   |
+
+*Tip:* When jumping to a tab far away, think if it will be frequently used. If the answer is yes, move it to the first position. By doing so you keep all your frequently used tabs to be in the first screen, so you have easy access to them.
 
 #### Ace jump
 

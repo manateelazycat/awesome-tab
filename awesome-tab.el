@@ -1773,6 +1773,20 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
       (awesome-tab-set-template bufset nil)
       (awesome-tab-display-update))))
 
+(defun awesome-tab-move-current-tab-to-beg ()
+  "Move current tab to the first position."
+  (interactive)
+  (let* ((bufset (awesome-tab-current-tabset t))
+         (bufs (copy-sequence (awesome-tab-tabs bufset)))
+         (current-tab-index
+          (cl-position (current-buffer) (mapcar #'car bufs)))
+         (current-tab (elt bufs current-tab-index)))
+    (setq bufs (delete current-tab bufs))
+    (push current-tab bufs)
+    (set bufset bufs)
+    (awesome-tab-set-template bufset nil)
+    (awesome-tab-display-update)))
+
 (defun awesome-tab-kill-all-buffers-in-current-group ()
   "Kill all buffers in current group."
   (interactive)
