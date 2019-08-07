@@ -1902,7 +1902,7 @@ tabs. NKEYS should be 1 or 2."
            (key-number (cond
                         ((<= visible-tabs-length ace-keys) 1)
                         ((<= visible-tabs-length (* ace-keys ace-keys)) 2)
-                        (t (error "Too many visible tabs."))))
+                        (t (error "Too many visible tabs. Put more keys into `awesome-tab-ace-keys'."))))
            (visible-seqs
             (cl-subseq
              (symbol-value
