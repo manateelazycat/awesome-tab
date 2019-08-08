@@ -312,7 +312,7 @@ Set this option with nil if you don't like icon in tab."
   :group 'awesome-tab
   :type 'boolean)
 
-(defcustom awesome-tab-ace-keys '(?j ?k ?d ?f ?h ?g)
+(defcustom awesome-tab-ace-keys '(?j ?k ?l ?s ?d ?f)
   "Keys used for `awesome-tab-ace-jump'."
   :group 'awesome-tab
   :set #'(lambda (symbol value)
