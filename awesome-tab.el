@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 5.8
-;; Last-Updated: 2019-08-03 07:37:16
+;; Version: 5.9
+;; Last-Updated: 2019-08-13 21:12:36
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -85,12 +85,16 @@
 ;; `awesome-tab-common-group-name'
 ;; `awesometab-hide-tabs-hooks'
 ;; `awesome-tab-height'
+;; `awesome-tab-face-height'
 ;; `awesome-tab-style'
 ;; `awesome-tab-display-sticky-function-name'
 ;; `awesome-tab-display-icon'
 ;;
 
 ;;; Change log:
+;;
+;; 2019/08/13
+;;      * Add new option `awesome-tab-face-height'.
 ;;
 ;; 2019/08/03
 ;;      * Adjust default value of `awesome-tab-ace-quit-keys'.
@@ -339,6 +343,11 @@ Set this option with nil if you don't like icon in tab."
           (const :tag "Replace icon" replace-icon)
           (const :tag "Left" left)
           (const :tag "Right" right)))
+
+(defcustom awesome-tab-face-height 130
+  "The height of tab face."
+  :group 'awesome-tab
+  :type 'int)
 
 (defvar-local awesome-tab-ace-state nil
   "Whether current buffer is doing `awesome-tab-ace-jump' or not.")
@@ -633,22 +642,22 @@ current cached copy."
 ;;
 
 (defface awesome-tab-unselected
-  '((t (:height 130)))
+  '((t))
   "Face used for unselected tabs."
   :group 'awesome-tab)
 
 (defface awesome-tab-selected
-  '((t (:height 130)))
+  '((t))
   "Face used for the selected tab."
   :group 'awesome-tab)
 
 (defface awesome-tab-unselected-ace-str
-  '((t (:height 130)))
+  '((t))
   "Face used for ace string on unselected tabs."
   :group 'awesome-tab)
 
 (defface awesome-tab-selected-ace-str
-  '((t (:height 130)))
+  '((t))
   "Face used for ace string on selected tabs."
   :group 'awesome-tab)
 
@@ -714,28 +723,36 @@ influence of C1 on the result."
     (cond
      ((eq bg-mode 'dark)
       (set-face-attribute 'awesome-tab-unselected nil
+                          :height awesome-tab-face-height
                           :background bg-light
                           :foreground fg-dark)
       (set-face-attribute 'awesome-tab-selected nil
+                          :height awesome-tab-face-height
                           :background bg-more-light
                           :foreground fg-more-light)
       (set-face-attribute 'awesome-tab-unselected-ace-str nil
+                          :height awesome-tab-face-height
                           :background bg-light
                           :foreground ace-str-foreground)
       (set-face-attribute 'awesome-tab-selected-ace-str nil
+                          :height awesome-tab-face-height
                           :background bg-more-light
                           :foreground ace-str-foreground))
      (t
       (set-face-attribute 'awesome-tab-unselected nil
+                          :height awesome-tab-face-height
                           :background bg-dark
                           :foreground fg-light)
       (set-face-attribute 'awesome-tab-selected nil
+                          :height awesome-tab-face-height
                           :background bg-more-dark
                           :foreground fg-more-dark)
       (set-face-attribute 'awesome-tab-unselected-ace-str nil
+                          :height awesome-tab-face-height
                           :background bg-dark
                           :foreground ace-str-foreground)
       (set-face-attribute 'awesome-tab-selected-ace-str nil
+                          :height awesome-tab-face-height
                           :background bg-more-dark
                           :foreground ace-str-foreground)))
     ))
