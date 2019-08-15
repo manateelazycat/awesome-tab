@@ -764,7 +764,12 @@ influence of C1 on the result."
   ;; Reder tab line.
   (let* ((sel (awesome-tab-selected-tab tabset))
          (tabs (awesome-tab-view tabset))
-         (padcolor (face-background 'default))
+         (bg-mode (frame-parameter nil 'background-mode))
+         (bg-unspecified (string= (face-background 'default) "unspecified-bg"))
+         (padcolor (cond
+                    ((and bg-unspecified (eq bg-mode 'dark)) "gray20")
+                    ((and bg-unspecified (eq bg-mode 'light)) "gray80")
+                    (t (face-background  'default))))
          atsel elts)
     ;; Track the selected tab to ensure it is always visible.
     (when awesome-tab--track-selected
