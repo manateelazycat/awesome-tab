@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 5.9
-;; Last-Updated: 2019-08-13 21:12:36
+;; Version: 6.0
+;; Last-Updated: 2019-09-12 06:46:36
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -92,6 +92,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/09/12
+;;      * Fix top-line above tab issue.
 ;;
 ;; 2019/08/13
 ;;      * Add new option `awesome-tab-face-height'.
@@ -348,6 +351,17 @@ Set this option with nil if you don't like icon in tab."
   "The height of tab face."
   :group 'awesome-tab
   :type 'int)
+
+(defcustom awesome-tab-icon-v-adjust -0.1
+  "The v-adjust of tab icon."
+  :group 'awesome-tab
+  :type 'float)
+
+(defcustom awesome-tab-icon-height 0.9
+  "The height of icon.
+It will render top-line on tab when you set this variable bigger than 0.9."
+  :group 'awesome-tab
+  :type 'float)
 
 (defvar-local awesome-tab-ace-state nil
   "Whether current buffer is doing `awesome-tab-ace-jump' or not.")
@@ -1567,11 +1581,12 @@ Otherwise use `all-the-icons-icon-for-buffer' to fetch icon for buffer."
              ((and
                tab-file
                (file-exists-p tab-file))
-              (all-the-icons-icon-for-file tab-file :v-adjust -0.1 :height 1))
-             ;; Use `all-the-icons-icon-for-buffer' for current tab buffer at last.
+              (all-the-icons-icon-for-file tab-file :v-adjust awesome-tab-icon-v-adjust :height awesome-tab-icon-height))
+             ;; Use `all-the-icons-icon-for-mode' for current tab buffer at last.
              (t
               (with-current-buffer tab-buffer
-                (all-the-icons-icon-for-buffer))))))
+                (all-the-icons-icon-for-mode major-mode :v-adjust awesome-tab-icon-v-adjust :height awesome-tab-icon-height)
+                )))))
       (when (and icon
                  ;; `get-text-property' need icon is string type.
                  (stringp icon))
