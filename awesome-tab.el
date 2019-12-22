@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 6.1
-;; Last-Updated: 2019-10-10 15:07:23
+;; Version: 6.2
+;; Last-Updated: 2019-12-22 12:47:43
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -92,6 +92,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2019/12/22
+;;      * Add flycheck temp buffer in hide black list.
 ;;
 ;; 2019/10/10
 ;;      * Fix issue #58 click tab select window of tab first.
@@ -2112,6 +2115,7 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
      (string-prefix-p "*helm" name)
      (string-prefix-p "*Compile-Log*" name)
      (string-prefix-p "*lsp" name)
+     (string-prefix-p "*flycheck" name)
 
      ;; Is not magit buffer.
      (and (string-prefix-p "magit" name)
