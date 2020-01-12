@@ -1596,7 +1596,7 @@ Tab name will truncate if option `awesome-tab-truncate-string' big than zero."
   "When tab buffer's file is exists, use `all-the-icons-icon-for-file' to fetch file icon.
 Otherwise use `all-the-icons-icon-for-buffer' to fetch icon for buffer."
   (when (and awesome-tab-display-icon
-             (featurep 'all-the-icons))
+             (ignore-errors (require 'all-the-icons)))
     (let* ((tab-buffer (car tab))
            (tab-file (buffer-file-name tab-buffer))
            (background (face-background face))
@@ -2101,8 +2101,7 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
 (defun awesome-tab-build-helm-source ()
   (interactive)
   (setq helm-source-awesome-tab-group
-        (when (featurep 'helm)
-          (require 'helm)
+        (when (ignore-errors require 'helm)
           (helm-build-sync-source "Awesome-Tab Group"
                                   :candidates #'awesome-tab-get-groups
                                   :action '(("Switch to group" . awesome-tab-switch-group))))))
@@ -2111,8 +2110,7 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
 (defun awesome-tab-counsel-switch-group ()
   "Switch group of awesome-tab."
   (interactive)
-  (when (featurep 'ivy)
-    (require 'ivy)
+  (when (ignore-errors require 'ivy)
     (ivy-read
      "Awesome-Tab Groups:"
      (awesome-tab-get-groups)
