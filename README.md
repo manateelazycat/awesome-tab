@@ -47,7 +47,7 @@ git clone --depth=1 https://github.com/manateelazycat/awesome-tab.git
 
 ```ELisp
 (use-package awesome-tab
-  :load-path "path/to/your/awesome-tab.el"
+  :load-path "path/to/your/awesome-tab"
   :config
   (awesome-tab-mode t)
 )
