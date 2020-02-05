@@ -2092,6 +2092,8 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
      "Dired")
     ((memq major-mode '(org-mode org-agenda-mode diary-mode))
      "OrgMode")
+    ((derived-mode-p 'eaf-mode)
+     "EAF")
     (t
      (awesome-tab-get-group-name (current-buffer))))))
 
