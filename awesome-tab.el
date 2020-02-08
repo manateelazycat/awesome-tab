@@ -331,6 +331,7 @@ Sticky function is the function at the top of the current window sticky."
   "Non-nil to display icon in tab, this feature need `all-the-icons' is loaded.
 Set this option with nil if you don't like icon in tab."
   :group 'awesome-tab
+  :require 'all-the-icons
   :type 'boolean)
 
 (defcustom awesome-tab-ace-keys '(?j ?k ?l ?s ?d ?f)
@@ -1595,8 +1596,7 @@ Tab name will truncate if option `awesome-tab-truncate-string' big than zero."
 (defun awesome-tab-icon-for-tab (tab face)
   "When tab buffer's file is exists, use `all-the-icons-icon-for-file' to fetch file icon.
 Otherwise use `all-the-icons-icon-for-buffer' to fetch icon for buffer."
-  (when (and awesome-tab-display-icon
-             (ignore-errors (require 'all-the-icons)))
+  (when awesome-tab-display-icon
     (let* ((tab-buffer (car tab))
            (tab-file (buffer-file-name tab-buffer))
            (background (face-background face))
