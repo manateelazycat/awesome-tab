@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 6.3
-;; Last-Updated: 2020-01-13 00:36:49
+;; Version: 6.4
+;; Last-Updated: 2020-02-13 12:53:35
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -90,6 +90,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2020/02/13
+;;      * Add `awesome-tab-all-the-icons-is-load-p' option.
 ;;
 ;; 2020/01/13
 ;;      * Add new option `awesome-tab-label-max-length'.
@@ -329,7 +332,6 @@ Sticky function is the function at the top of the current window sticky."
   "Non-nil to display icon in tab, this feature need `all-the-icons' is loaded.
 Set this option with nil if you don't like icon in tab."
   :group 'awesome-tab
-  :require 'all-the-icons
   :type 'boolean)
 
 (defcustom awesome-tab-ace-keys '(?j ?k ?l ?s ?d ?f)
@@ -407,6 +409,9 @@ group.  Notice that it is better that a buffer belongs to one group.")
 
 (defvar awesome-tab-ace-2-key-seqs nil
   "List of 2-key sequences used by `awesome-tab-ace-jump'")
+
+(defvar awesome-tab-all-the-icons-is-load-p (ignore-errors (require 'all-the-icons))
+  "Return non-nil if `all-the-icons' is load, `require' will have performance problem, so don't call it dynamically.")
 
 ;;; Misc.
 ;;
@@ -1594,7 +1599,8 @@ Tab name will truncate if option `awesome-tab-truncate-string' big than zero."
 (defun awesome-tab-icon-for-tab (tab face)
   "When tab buffer's file is exists, use `all-the-icons-icon-for-file' to fetch file icon.
 Otherwise use `all-the-icons-icon-for-buffer' to fetch icon for buffer."
-  (when awesome-tab-display-icon
+  (when (and awesome-tab-display-icon
+             awesome-tab-all-the-icons-is-load-p)
     (let* ((tab-buffer (car tab))
            (tab-file (buffer-file-name tab-buffer))
            (background (face-background face))
