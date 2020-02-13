@@ -187,8 +187,6 @@ If you're a helm fan, you need to add below code in your helm config,
 (awesome-tab-build-helm-source)
 ```
 
-Then add ```helm-source-awesome-tab-group``` to ```helm-source-list```.
-
 Ivy fans can use the ```awesome-tab-counsel-switch-group``` function instead.
 
 ### Customize

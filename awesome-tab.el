@@ -74,8 +74,6 @@
 ;;
 ;; (awesome-tab-build-helm-source)
 ;;
-;; Then add `helm-source-awesome-tab-group' in `helm-source-list'
-;;
 
 ;;; Customize:
 ;;
