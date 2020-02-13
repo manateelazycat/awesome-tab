@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 6.4
-;; Last-Updated: 2020-02-13 12:53:35
+;; Version: 6.5
+;; Last-Updated: 2020-02-13 13:15:09
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -93,6 +93,7 @@
 ;;
 ;; 2020/02/13
 ;;      * Add `awesome-tab-all-the-icons-is-load-p' option.
+;;      * Fix window-live-p error when click tab.
 ;;
 ;; 2020/01/13
 ;;      * Add new option `awesome-tab-label-max-length'.
@@ -1544,10 +1545,12 @@ element."
    'local-map (purecopy (awesome-tab-make-header-line-mouse-map
                          'mouse-1
                          `(lambda (event) (interactive "e")
-                            (select-window (window-at (cadr (mouse-position))
-                                                      (cddr (mouse-position))
-                                                      (car (mouse-position))))
-                            (awesome-tab-buffer-select-tab ',tab))))))
+                            (let ((tab-window (window-at (cadr (mouse-position))
+                                                         (cddr (mouse-position))
+                                                         (car (mouse-position)))))
+                              (when tab-window
+                                (select-window tab-window)
+                                (awesome-tab-buffer-select-tab ',tab))))))))
 
 (defun awesome-tab-buffer-tab-label (tab)
   "Return a label for TAB.
