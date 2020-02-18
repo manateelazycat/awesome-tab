@@ -257,7 +257,6 @@
 (require 'cl)
 (require 'cl-lib)
 (require 'color)
-(require 'which-func)
 
 ;;; Code:
 ;;;;;;;;;;;;;;;;;;;;;;; Awesome-Tab source code ;;;;;;;;;;;;;;;;;;;;;;;
@@ -1652,6 +1651,7 @@ Currently, this function is only use for option `awesome-tab-display-sticky-func
         (unless (equal scroll-y awesome-tab-last-scroll-y)
           (let ((func-name (save-excursion
                              (goto-char scroll-y)
+                             (require 'which-func)
                              (which-function))))
             (when (or
                    (not (boundp 'awesome-tab-last-sticky-func-name))
