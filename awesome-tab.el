@@ -87,6 +87,7 @@
 ;; `awesome-tab-style'
 ;; `awesome-tab-display-sticky-function-name'
 ;; `awesome-tab-display-icon'
+;; `awesome-tab-show-tab-index'
 ;;
 
 ;;; Change log:
@@ -377,6 +378,11 @@ Set this option with nil if you don't like icon in tab."
 It will render top-line on tab when you set this variable bigger than 0.9."
   :group 'awesome-tab
   :type 'float)
+
+(defcustom awesome-tab-show-tab-index nil
+  "Non-nil to display index in tab."
+  :group 'awesome-tab
+  :type 'boolean)
 
 (defvar-local awesome-tab-ace-state nil
   "Whether current buffer is doing `awesome-tab-ace-jump' or not.")
@@ -693,6 +699,16 @@ current cached copy."
   "Face used for ace string on selected tabs."
   :group 'awesome-tab)
 
+(defface awesome-tab-unselected-index
+  '((t (:inherit 'awesome-tab-unselected)))
+  "Face used for index on unselected tabs."
+  :group 'awesome-tab)
+
+(defface awesome-tab-selected-index
+  '((t (:inherit 'awesome-tab-selected)))
+  "Face used for index on selected tabs."
+  :group 'awesome-tab)
+
 ;;; Tabs
 ;;
 (defun awesome-tab-make-header-line-mouse-map (mouse function)
@@ -786,7 +802,11 @@ influence of C1 on the result."
       (set-face-attribute 'awesome-tab-selected-ace-str nil
                           :height awesome-tab-face-height
                           :background bg-more-dark
-                          :foreground ace-str-foreground)))
+                          :foreground ace-str-foreground))
+     (set-face-attribute 'awesome-tab-selected-index nil
+                         :foreground fg-error)
+     (set-face-attribute 'awesome-tab-unselected-index nil
+                         :foreground fg-error))
     ))
 
 (defun awesome-tab-line-format (tabset)
@@ -1555,6 +1575,11 @@ element."
   "Return a label for TAB.
 That is, a string used to represent it on the tab bar."
   (let* ((is-active-tab (awesome-tab-selected-p tab (awesome-tab-current-tabset)))
+
+         (tab-face (if is-active-tab 'awesome-tab-selected 'awesome-tab-unselected))
+         (index-face (if is-active-tab 'awesome-tab-selected-index 'awesome-tab-unselected-index))
+         (current-buffer-index (cl-position tab (awesome-tab-view (awesome-tab-current-tabset t))))
+
          (tab-face (if is-active-tab 'awesome-tab-selected 'awesome-tab-unselected))
          (ace-str-face (if is-active-tab 'awesome-tab-selected-ace-str
                          'awesome-tab-unselected-ace-str))
@@ -1579,6 +1604,9 @@ That is, a string used to represent it on the tab bar."
      (when (and ace-state (eq awesome-tab-ace-str-style 'right))
        (propertize ace-str 'face ace-str-face))
      ;; Tab right edge.
+     ;; Tab index.
+     (when awesome-tab-show-tab-index
+       (propertize (format "%s " (+ current-buffer-index 1)) 'face index-face))
      (awesome-tab-separator-render awesome-tab-style-right tab-face)
      )))
 
