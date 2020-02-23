@@ -384,6 +384,11 @@ It will render top-line on tab when you set this variable bigger than 0.9."
   :group 'awesome-tab
   :type 'boolean)
 
+(defcustom awesome-tab-index-format-str "[%d] "
+  "Format string for tab index."
+  :group 'awesome-tab
+  :type 'string)
+
 (defvar-local awesome-tab-ace-state nil
   "Whether current buffer is doing `awesome-tab-ace-jump' or not.")
 
@@ -681,32 +686,44 @@ current cached copy."
 
 (defface awesome-tab-unselected
   '((t))
-  "Face used for unselected tabs."
+  "Face used for unselected tabs.
+Do not customize this. It's attribute will be calculated on the
+fly to fit your theme."
   :group 'awesome-tab)
 
 (defface awesome-tab-selected
   '((t))
-  "Face used for the selected tab."
+  "Face used for the selected tab.
+Do not customize this. It's attribute will be calculated on the
+fly to fit your theme."
   :group 'awesome-tab)
 
 (defface awesome-tab-unselected-ace-str
-  '((t))
-  "Face used for ace string on unselected tabs."
+  '((t (:inherit 'font-lock-function-name-face)))
+  "Face used for ace string on unselected tabs.
+Note that the background will be calculated on the fly, so
+customize the background will not have any effect."
   :group 'awesome-tab)
 
 (defface awesome-tab-selected-ace-str
-  '((t))
-  "Face used for ace string on selected tabs."
+  '((t (:inherit 'font-lock-function-name-face)))
+  "Face used for ace string on selected tabs.
+Note that the background will be calculated on the fly, so
+customize the background will not have any effect."
   :group 'awesome-tab)
 
 (defface awesome-tab-unselected-index
-  '((t (:inherit 'awesome-tab-unselected)))
-  "Face used for index on unselected tabs."
+  '((t (:inherit 'font-lock-function-name-face)))
+  "Face used for index on unselected tabs.
+Note that the background will be calculated on the fly, so
+customize the background will not have any effect."
   :group 'awesome-tab)
 
 (defface awesome-tab-selected-index
-  '((t (:inherit 'awesome-tab-selected)))
-  "Face used for index on selected tabs."
+  '((t (:inherit 'font-lock-function-name-face)))
+  "Face used for index on selected tabs.
+Note that the background will be calculated on the fly, so
+customize the background will not have any effect."
   :group 'awesome-tab)
 
 ;;; Tabs
@@ -746,8 +763,6 @@ influence of C1 on the result."
               ((and bg-unspecified (eq bg-mode 'dark)) "gray20")
               ((and bg-unspecified (eq bg-mode 'light)) "gray80")
               (t (face-background 'default))))
-         ;; Ace string foreground.
-         (ace-str-foreground (face-foreground 'font-lock-function-name-face))
          ;; for light themes
          (bg-dark (awesome-tab-color-blend black bg 0.1))
          (bg-more-dark (awesome-tab-color-blend black bg 0.25))
@@ -780,12 +795,16 @@ influence of C1 on the result."
                           :foreground fg-more-light)
       (set-face-attribute 'awesome-tab-unselected-ace-str nil
                           :height awesome-tab-face-height
-                          :background bg-light
-                          :foreground ace-str-foreground)
+                          :background bg-light)
       (set-face-attribute 'awesome-tab-selected-ace-str nil
                           :height awesome-tab-face-height
-                          :background bg-more-light
-                          :foreground ace-str-foreground))
+                          :background bg-more-light)
+      (set-face-attribute 'awesome-tab-unselected-index nil
+                          :height awesome-tab-face-height
+                          :background bg-light)
+      (set-face-attribute 'awesome-tab-selected-index nil
+                          :height awesome-tab-face-height
+                          :background bg-more-light))
      (t
       (set-face-attribute 'awesome-tab-unselected nil
                           :height awesome-tab-face-height
@@ -797,17 +816,18 @@ influence of C1 on the result."
                           :foreground fg-more-dark)
       (set-face-attribute 'awesome-tab-unselected-ace-str nil
                           :height awesome-tab-face-height
-                          :background bg-dark
-                          :foreground ace-str-foreground)
+                          :background bg-dark)
       (set-face-attribute 'awesome-tab-selected-ace-str nil
                           :height awesome-tab-face-height
-                          :background bg-more-dark
-                          :foreground ace-str-foreground))
-     (set-face-attribute 'awesome-tab-selected-index nil
-                         :foreground fg-error)
-     (set-face-attribute 'awesome-tab-unselected-index nil
-                         :foreground fg-error))
-    ))
+                          :background bg-more-dark)
+      (set-face-attribute 'awesome-tab-unselected-index nil
+                          :height awesome-tab-face-height
+                          :background bg-dark)
+      (set-face-attribute 'awesome-tab-selected-index nil
+                          :height awesome-tab-face-height
+                          :background bg-more-dark)
+
+      ))))
 
 (defun awesome-tab-line-format (tabset)
   "Return the `header-line-format' value to display TABSET."
@@ -1606,7 +1626,8 @@ That is, a string used to represent it on the tab bar."
      ;; Tab right edge.
      ;; Tab index.
      (when awesome-tab-show-tab-index
-       (propertize (format "%s " (+ current-buffer-index 1)) 'face index-face))
+       (propertize (format awesome-tab-index-format-str
+                           (+ current-buffer-index 1)) 'face index-face))
      (awesome-tab-separator-render awesome-tab-style-right tab-face)
      )))
 
