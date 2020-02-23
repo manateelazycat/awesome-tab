@@ -180,6 +180,9 @@ and switches to the tab of the corresponding index.
 Note that this function switches to the visible range,
 not the actual logical index position of the current group.
 
+To show the current index on tabs, set `awesome-tab-show-tab-index` to non-nil.
+You can also change its format by customizing `awesome-tab-index-format-str`.
+
 ### Plugins
 If you're a helm fan, you need to add below code in your helm config,
 
