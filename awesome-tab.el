@@ -2159,7 +2159,7 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
 (defun awesome-tab-build-helm-source ()
   (interactive)
   (setq helm-source-awesome-tab-group
-        (when (ignore-errors require 'helm)
+        (when (ignore-errors (require 'helm))
           (helm-build-sync-source "Awesome-Tab Group"
                                   :candidates #'awesome-tab-get-groups
                                   :action '(("Switch to group" . awesome-tab-switch-group))))))
