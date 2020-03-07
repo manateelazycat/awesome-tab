@@ -15,7 +15,7 @@
 ;;
 ;; Features that might be required by this library:
 ;;
-;; `cl' `cl-lib' `color' `which-func'
+;; `cl-lib' `color' `which-func'
 ;;
 
 ;;; This file is NOT part of GNU Emacs
@@ -255,7 +255,6 @@
 ;;
 
 ;;; Require
-(require 'cl)
 (require 'cl-lib)
 (require 'color)
 
