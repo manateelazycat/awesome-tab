@@ -1790,7 +1790,9 @@ Run as `awesome-tab-quit-hook'."
                                        (funcall awesome-tab-buffer-groups-function) )))
                            (funcall awesome-tab-buffer-list-function)))
          (groups (awesome-tab-get-groups))
-         (group-name (or groupname (ido-completing-read "Groups: " groups))) )
+         (group-name (or groupname
+                         (completing-read "Switch to group: "
+                                          groups nil t))) )
     (catch 'done
       (mapc
        #'(lambda (group)
@@ -1932,7 +1934,8 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
          (extension-names (awesome-tab-get-extensions))
          match-extension)
     ;; Read extension need to kill.
-    (setq match-extension (ido-completing-read "Kill buffers suffix with: " extension-names))
+    (setq match-extension (completing-read "Kill buffers suffix with: "
+                                           extension-names nil t))
     ;; Kill all buffers match extension in current group.
     (awesome-tab-kill-buffer-match-rule
      (lambda (buffer)
@@ -1951,16 +1954,14 @@ Optional argument REVERSED default is move backward, if reversed is non-nil move
          (extension-names (awesome-tab-get-extensions))
          match-extension)
     ;; Read extension need to kill.
-    (setq match-extension (ido-completing-read "Just keep buffers suffix with: " extension-names))
+    (setq match-extension (completing-read "Keep buffers suffix with: "
+                                           extension-names nil t))
     ;; Kill all buffers match extension in current group.
     (awesome-tab-kill-buffer-match-rule
      (lambda (buffer)
        (let ((filename (buffer-file-name buffer)))
          (and filename (not (string-equal (file-name-extension filename) match-extension)))
-         )))
-    ;; Switch to next group if last file killed.
-    (when (equal (length extension-names) 1)
-      (awesome-tab-forward-group))))
+         )))))
 
 (defun awesome-tab-select-visible-nth-tab (tab-index)
   "Select visible tab with `tab-index'.
