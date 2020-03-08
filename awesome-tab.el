@@ -2006,6 +2006,19 @@ tabs. NKEYS should be 1 or 2."
       (setq i (1+ i)))
     (nreverse str)))
 
+(defun awesome-tab-open-tab-in-current-group ()
+  "Open a tab in current group."
+  (interactive)
+  (let* ((generate-candidate (lambda (tab)
+                               (propertize
+                                (string-trim (awesome-tab-tab-name tab))
+                                'awesome-tab-tab-entity tab)))
+         (candidates (mapcar generate-candidate
+                             (awesome-tab-tabs (awesome-tab-current-tabset)))))
+    (awesome-tab-buffer-select-tab
+     (get-text-property 0 'awesome-tab-tab-entity
+                        (completing-read "Open tab:" candidates nil t)))))
+
 (defun awesome-tab-ace-jump ()
   "Jump to a visible tab by 1 or 2 chars."
   (interactive)
