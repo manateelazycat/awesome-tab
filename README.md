@@ -1,4 +1,5 @@
-<img src="./screenshot.png">
+<img src="./dark-screenshot.png">
+<img src="./light-screenshot.png">
 
 
 Table of Contents
@@ -11,7 +12,6 @@ Table of Contents
      * [Customize](#customize)
         * [Icon](#icon)
         * [Theme](#theme)
-        * [TabStyle](#tabstyle)
         * [HideRules](#hiderules)
         * [GroupRules](#grouprules)
         * [FixedWidth](#fixedwidth)
@@ -49,8 +49,7 @@ git clone --depth=1 https://github.com/manateelazycat/awesome-tab.git
 (use-package awesome-tab
   :load-path "path/to/your/awesome-tab"
   :config
-  (awesome-tab-mode t)
-)
+  (awesome-tab-mode t))
 ```
 
 3. Reload your emacs configuration using `M-x eval-buffer` or restarting emacs
@@ -211,34 +210,6 @@ You may need to set `frame-background-mode` manually to have correct tab (and te
 (when (not (display-graphic-p))
   (setq frame-background-mode 'dark))
 ```
-
-#### TabStyle
-Default tab style is "wave", you can customize option ```awesome-tab-style``` follow your preferences, below are the different tab style screenshots:
-
-##### alternate
-<img src="./theme/alternate.png">
-
-##### bar
-<img src="./theme/bar.png">
-
-##### box
-<img src="./theme/box.png">
-
-##### chamfer
-<img src="./theme/chamfer.png">
-
-##### rounded
-<img src="./theme/rounded.png">
-
-##### slant
-<img src="./theme/slant.png">
-
-##### wave
-<img src="./theme/wave.png">
-
-##### zigzag
-<img src="./theme/zigzag.png">
-
 
 ##### HideRules
 Awesome tab hide some tabs with regular expression that controller by function ```awesome-tab-hide-tab-function```
