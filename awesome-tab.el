@@ -1160,7 +1160,7 @@ That is, a string used to represent it on the tab bar."
     (propertize
      " " 'display
      (let ((data (make-list height (make-list width 1)))
-           (color (face-background 'highlight)))
+           (color (face-foreground 'default)))
        (ignore-errors
          (create-image
           (concat
