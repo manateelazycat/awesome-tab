@@ -1721,7 +1721,7 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
 (defun awesome-tab-counsel-switch-group ()
   "Switch group of awesome-tab."
   (interactive)
-  (when (ignore-errors require 'ivy)
+  (when (ignore-errors (require 'ivy))
     (ivy-read
      "Awesome-Tab Groups:"
      (awesome-tab-get-groups)
