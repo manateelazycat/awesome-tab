@@ -19,6 +19,8 @@ Table of Contents
         * [FixedWidth](#fixedwidth)
         * [DisplayFunctionName](#displayfunctionname)
         * [ShowTabIndex](#showtabindex)
+        * [AdjustTabHeight](#adjusttabheight)
+        * [AdjustTabContrast](#adjusttabconstrast)
 
 # What is it?
 
@@ -316,3 +318,17 @@ If you want show index in tab, you can use below setting:
 ```
 
 You can also display a personalized index by change option ```awesome-tab-index-format-str```
+
+##### AdjustTabHeight
+
+You can use below code adjust tab height:
+
+```elisp
+(setq awesome-tab-height 150)
+```
+
+##### AdjustTabContrast
+
+If you think the contrast between the label is too low, can lower both values, increase the contrast:
+
+```awesome-tab-dark-unselected-blend``` and ```awesome-tab-light-unselected-blend```
