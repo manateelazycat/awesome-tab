@@ -8,6 +8,8 @@ Table of Contents
 * [What is it?](#what-is-it)
      * [Installation](#installation)
      * [Usage](#usage)
+     * [AceJump](#acejump)
+     * [SwitchTabByIndex](#switchtabbyindex)
      * [Plugins](#plugins)
      * [Customize](#customize)
         * [Icon](#icon)
@@ -16,6 +18,7 @@ Table of Contents
         * [GroupRules](#grouprules)
         * [FixedWidth](#fixedwidth)
         * [DisplayFunctionName](#displayfunctionname)
+        * [ShowTabIndex](#showtabindex)
 
 # What is it?
 
@@ -82,7 +85,7 @@ git clone --depth=1 https://github.com/manateelazycat/awesome-tab.git
 
 *Tip:* When jumping to a tab far away, think if it will be frequently used. If the answer is yes, move it to the first position. By doing so you keep all your frequently used tabs to be in the first screen, so you have easy access to them.
 
-#### Ace jump
+#### AceJump
 
 Call command ```awesome-tab-ace-jump```, and a sequence of 1 or 2 characters will show on tabs in the current tab group. Type them to jump to that tab.
 
@@ -156,7 +159,7 @@ WIN-ID : Window index."
      (string-to-number (car (nreverse (split-string key-desc "-"))))))))
 ```
 
-#### Switch tab with given index
+#### SwitchTabByIndex
 
 You can bind the number keys to the command ```awesome-tab-select-visible-tab```, such as s-1, s-2, s-3 ... etc.
 
@@ -210,6 +213,25 @@ You may need to set `frame-background-mode` manually to have correct tab (and te
 (when (not (display-graphic-p))
   (setq frame-background-mode 'dark))
 ```
+
+or you like light theme more:
+
+```Elisp
+(when (not (display-graphic-p))
+  (setq frame-background-mode light))
+```
+
+You can customize terminal tab face by below options:
+
+* ```awesome-tab-terminal-dark-select-background-color```
+* ```awesome-tab-terminal-dark-select-foreground-color```
+* ```awesome-tab-terminal-dark-unselect-background-color```
+* ```awesome-tab-terminal-dark-unselect-foreground-color```
+* ```awesome-tab-terminal-light-select-background-color```
+* ```awesome-tab-terminal-light-select-foreground-color```
+* ```awesome-tab-terminal-light-unselect-background-color```
+* ```awesome-tab-terminal-light-unselect-foreground-color```
+
 
 ##### HideRules
 Awesome tab hide some tabs with regular expression that controller by function ```awesome-tab-hide-tab-function```
@@ -284,3 +306,13 @@ You can set variable ```awesome-tab-display-sticky-function-name``` with t,
 then function name will display in current tab.
 
 Default this feature is disable.
+
+##### ShowTabIndex
+
+If you want show index in tab, you can use below setting:
+
+```elisp
+(setq awesome-tab-show-tab-index t)
+```
+
+You can also display a personalized index by change option ```awesome-tab-index-format-str```

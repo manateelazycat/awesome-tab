@@ -379,6 +379,46 @@ It will render top-line on tab when you set this variable bigger than 0.9."
   :group 'awesome-tab
   :type 'string)
 
+(defcustom awesome-tab-terminal-dark-select-background-color "#222222"
+  "Select background color for terminal dark mode."
+  :group 'awesome-tab
+  :type 'string)
+
+(defcustom awesome-tab-terminal-dark-select-foreground-color "#AAAAAA"
+  "Select foreground color for terminal dark mode."
+  :group 'awesome-tab
+  :type 'string)
+
+(defcustom awesome-tab-terminal-dark-unselect-background-color "#000000"
+  "Unselect background color for terminal dark mode."
+  :group 'awesome-tab
+  :type 'string)
+
+(defcustom awesome-tab-terminal-dark-unselect-foreground-color "#AAAAAA"
+  "Unselect foreground color for terminal dark mode."
+  :group 'awesome-tab
+  :type 'string)
+
+(defcustom awesome-tab-terminal-light-select-background-color "#AAAAAA"
+  "Select background color for terminal light mode."
+  :group 'awesome-tab
+  :type 'string)
+
+(defcustom awesome-tab-terminal-light-select-foreground-color "#333333"
+  "Select foreground color for terminal light mode."
+  :group 'awesome-tab
+  :type 'string)
+
+(defcustom awesome-tab-terminal-light-unselect-background-color "#333333"
+  "Unselect background color for terminal light mode."
+  :group 'awesome-tab
+  :type 'string)
+
+(defcustom awesome-tab-terminal-light-unselect-foreground-color "#AAAAAA"
+  "Unselect foreground color for terminal light mode."
+  :group 'awesome-tab
+  :type 'string)
+
 (defvar-local awesome-tab-ace-state nil
   "Whether current buffer is doing `awesome-tab-ace-jump' or not.")
 
@@ -743,17 +783,18 @@ influence of C1 on the result."
 (defun awesome-tab-adjust-color-with-theme ()
   "We need adjust awesome-tab's colors when user switch new theme."
   (let* ((bg-mode (frame-parameter nil 'background-mode))
-         (select-tab-background (face-background 'default))
+         (select-tab-background (awesome-tab-get-select-background-color))
          (unselect-tab-background (awesome-tab-get-unslect-background-color)))
-    (setq awesome-tab-active-bar (awesome-tab-make-xpm 3 30))
+    (when (display-graphic-p)
+      (setq awesome-tab-active-bar (awesome-tab-make-xpm 3 30)))
 
     (set-face-attribute 'header-line nil :height awesome-tab-height)
 
     (set-face-attribute 'awesome-tab-selected-face nil
-                        :foreground (face-foreground 'font-lock-doc-face)
+                        :foreground (awesome-tab-get-select-foreground-color)
                         :background select-tab-background)
     (set-face-attribute 'awesome-tab-unselected-face nil
-                        :foreground (face-foreground 'font-lock-comment-face)
+                        :foreground (awesome-tab-get-unselect-foreground-color)
                         :background unselect-tab-background)
 
     (set-face-attribute 'awesome-tab-selected-ace-face nil
@@ -766,16 +807,40 @@ influence of C1 on the result."
     (set-face-attribute 'awesome-tab-unselected-index-face nil
                         :background unselect-tab-background)))
 
+(defun awesome-tab-get-select-foreground-color ()
+  (let ((bg-mode (frame-parameter nil 'background-mode)))
+    (if (display-graphic-p)
+        (face-foreground 'font-lock-doc-face)
+      (cond ((eq bg-mode 'dark) awesome-tab-terminal-dark-select-foreground-color)
+            ((eq bg-mode 'light) awesome-tab-terminal-light-select-foreground-color))
+      )))
+
+(defun awesome-tab-get-unselect-foreground-color ()
+  (let ((bg-mode (frame-parameter nil 'background-mode)))
+    (if (display-graphic-p)
+        (face-foreground 'font-lock-comment-face)
+      (cond ((eq bg-mode 'dark) awesome-tab-terminal-dark-unselect-foreground-color)
+            ((eq bg-mode 'light) awesome-tab-terminal-light-unselect-foreground-color))
+      )))
+
+(defun awesome-tab-get-select-background-color ()
+  (let ((bg-mode (frame-parameter nil 'background-mode)))
+    (if (display-graphic-p)
+        (face-background 'default)
+      (cond ((eq bg-mode 'dark) awesome-tab-terminal-dark-select-background-color)
+            ((eq bg-mode 'light) awesome-tab-terminal-light-select-background-color))
+      )))
+
 (defun awesome-tab-get-unslect-background-color ()
-  (let* ((bg-mode (frame-parameter nil 'background-mode))
-         (bg-unspecified (string= (face-background 'default) "unspecified-bg")))
-    (if bg-unspecified
-        (cond ((eq bg-mode 'dark) "gray20")
-              ((eq bg-mode 'light) "gray80"))
-      (cond ((eq bg-mode 'dark)
-             (awesome-tab-color-blend (face-background 'default) "#000000" 0.8))
-            ((eq bg-mode 'light)
-             (awesome-tab-color-blend (face-background 'default) "#000000" 0.9))))))
+  (let* ((bg-mode (frame-parameter nil 'background-mode)))
+    (if (display-graphic-p)
+        (cond ((eq bg-mode 'dark)
+               (awesome-tab-color-blend (face-background 'default) "#000000" 0.8))
+              ((eq bg-mode 'light)
+               (awesome-tab-color-blend (face-background 'default) "#000000" 0.9)))
+      (cond ((eq bg-mode 'dark) awesome-tab-terminal-dark-unselect-background-color)
+            ((eq bg-mode 'light) awesome-tab-terminal-light-unselect-background-color))
+      )))
 
 (defun awesome-tab-line-format (tabset)
   "Return the `header-line-format' value to display TABSET."
@@ -1116,22 +1181,16 @@ element."
   "Return a label for TAB.
 That is, a string used to represent it on the tab bar."
   (let* ((is-active-tab (awesome-tab-selected-p tab (awesome-tab-current-tabset)))
-
          (tab-face (if is-active-tab 'awesome-tab-selected-face 'awesome-tab-unselected-face))
          (index-face (if is-active-tab 'awesome-tab-selected-index-face 'awesome-tab-unselected-index-face))
          (current-buffer-index (cl-position tab (awesome-tab-view (awesome-tab-current-tabset t))))
-
-         (tab-face (if is-active-tab 'awesome-tab-selected-face 'awesome-tab-unselected-face))
-         (ace-str-face (if is-active-tab 'awesome-tab-selected-ace-face
-                         'awesome-tab-unselected-ace-face))
-         (current-buffer-index
-          (cl-position tab (awesome-tab-view awesome-tab-current-tabset)))
-         (ace-str (if awesome-tab-ace-state
-                      (elt ace-strs current-buffer-index) ""))
+         (ace-str-face (if is-active-tab 'awesome-tab-selected-ace-face 'awesome-tab-unselected-ace-face))
+         (current-buffer-index (cl-position tab (awesome-tab-view awesome-tab-current-tabset)))
+         (ace-str (if awesome-tab-ace-state (elt ace-strs current-buffer-index) ""))
          (ace-state awesome-tab-ace-state))
     (concat
      ;; Active bar.
-     (when is-active-tab
+     (when (and is-active-tab awesome-tab-active-bar)
        (propertize awesome-tab-active-bar))
      ;; Ace string.
      (when (and ace-state (eq awesome-tab-ace-str-style 'left))
@@ -1149,8 +1208,7 @@ That is, a string used to represent it on the tab bar."
        (propertize ace-str 'face ace-str-face))
      ;; Tab index.
      (when awesome-tab-show-tab-index
-       (propertize (format awesome-tab-index-format-str
-                           (+ current-buffer-index 1)) 'face index-face))
+       (propertize (format awesome-tab-index-format-str (+ current-buffer-index 1)) 'face index-face))
      )))
 
 (defun awesome-tab-make-xpm (width height)
