@@ -422,15 +422,15 @@ It will render top-line on tab when you set this variable bigger than 0.9."
   :group 'awesome-tab
   :type 'string)
 
-(defcustom awesome-tab-dark-active-bar-color "#008b8b"
+(defcustom awesome-tab-dark-active-bar-color nil
   "The bar color for active tab in dark theme."
   :group 'awesome-tab
-  :type 'string)
+  :type '(choice (const nil) string))
 
-(defcustom awesome-tab-light-active-bar-color "#55ced1"
+(defcustom awesome-tab-light-active-bar-color nil
   "The bar color for active tab in light theme."
   :group 'awesome-tab
-  :type 'string)
+  :type '(choice (const nil) string))
 
 (defvar-local awesome-tab-ace-state nil
   "Whether current buffer is doing `awesome-tab-ace-jump' or not.")
@@ -1232,8 +1232,10 @@ That is, a string used to represent it on the tab bar."
      " " 'display
      (let ((data (make-list height (make-list width 1)))
            (color (pcase (frame-parameter nil 'background-mode)
-                    ('dark awesome-tab-dark-active-bar-color)
-                    ('light awesome-tab-light-active-bar-color))))
+                    ('dark (or awesome-tab-dark-active-bar-color)
+                           (face-background 'highlight))
+                    ('light (or awesome-tab-light-active-bar-color)
+                            (face-background 'highlight)))))
        (ignore-errors
          (create-image
           (concat
