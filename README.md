@@ -21,6 +21,7 @@ Table of Contents
         * [ShowTabIndex](#showtabindex)
         * [AdjustTabHeight](#adjusttabheight)
         * [AdjustTabContrast](#adjusttabconstrast)
+        * [AdjustActiveBar](#adjustactivebar)
 
 # What is it?
 
@@ -332,3 +333,6 @@ You can use below code adjust tab height:
 If you think the contrast between the label is too low, can lower both values, increase the contrast:
 
 ```awesome-tab-dark-unselected-blend``` and ```awesome-tab-light-unselected-blend```
+
+##### AdjustActiveBar
+You can customize active bar with change ```awesome-tab-active-bar-width``` and ```awesome-tab-active-bar-height```
