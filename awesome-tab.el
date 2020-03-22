@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 7.1
-;; Last-Updated: 2020-03-22 14:05:47
+;; Version: 7.2
+;; Last-Updated: 2020-03-22 22:43:20
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -92,6 +92,7 @@
 ;;
 ;; 2020/03/22
 ;;      * Support EAF mode.
+;;      * Add options for customize active bar.
 ;;
 ;; 2020/03/21
 ;;      * Remove unnecessary tab style and include active bar.
@@ -441,6 +442,16 @@ It will render top-line on tab when you set this variable bigger than 0.9."
   "The blend value for unselected background of light mode"
   :group 'awesome-tab
   :type 'float)
+
+(defcustom awesome-tab-active-bar-width 3
+  "The width of active bar."
+  :group 'awesome-tab
+  :type 'integer)
+
+(defcustom awesome-tab-active-bar-height 30
+  "The height of active bar."
+  :group 'awesome-tab
+  :type 'integer)
 
 (defvar-local awesome-tab-ace-state nil
   "Whether current buffer is doing `awesome-tab-ace-jump' or not.")
@@ -809,7 +820,7 @@ influence of C1 on the result."
          (select-tab-background (awesome-tab-get-select-background-color))
          (unselect-tab-background (awesome-tab-get-unslect-background-color)))
     (when (display-graphic-p)
-      (setq awesome-tab-active-bar (awesome-tab-make-xpm 3 30)))
+      (setq awesome-tab-active-bar (awesome-tab-make-xpm awesome-tab-active-bar-width awesome-tab-active-bar-height)))
 
     (set-face-attribute 'header-line nil :height awesome-tab-height)
 
