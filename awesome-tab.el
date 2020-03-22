@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 7.0
-;; Last-Updated: 2020-03-21 23:52:28
+;; Version: 7.1
+;; Last-Updated: 2020-03-22 14:05:47
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -89,6 +89,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2020/03/22
+;;      * Support EAF mode.
 ;;
 ;; 2020/03/21
 ;;      * Remove unnecessary tab style and include active bar.
@@ -1273,7 +1276,9 @@ Otherwise use `all-the-icons-icon-for-buffer' to fetch icon for buffer."
              ;; Use `all-the-icons-icon-for-mode' for current tab buffer at last.
              (t
               (with-current-buffer tab-buffer
-                (all-the-icons-icon-for-mode major-mode :v-adjust awesome-tab-icon-v-adjust :height awesome-tab-icon-height)
+                (if (derived-mode-p tab-buffer 'eaf-mode)
+                    (all-the-icons-faicon "html5"  :v-adjust awesome-tab-icon-v-adjust :height awesome-tab-icon-height)
+                  (all-the-icons-icon-for-mode major-mode :v-adjust awesome-tab-icon-v-adjust :height awesome-tab-icon-height))
                 )))))
       (when (and icon
                  ;; `get-text-property' need icon is string type.
