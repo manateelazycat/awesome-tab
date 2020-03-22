@@ -432,6 +432,16 @@ It will render top-line on tab when you set this variable bigger than 0.9."
   :group 'awesome-tab
   :type '(choice (const nil) string))
 
+(defcustom awesome-tab-dark-unselected-blend 0.8
+  "The blend value for unselected background of dark mode"
+  :group 'awesome-tab
+  :type 'float)
+
+(defcustom awesome-tab-light-unselected-blend 0.9
+  "The blend value for unselected background of light mode"
+  :group 'awesome-tab
+  :type 'float)
+
 (defvar-local awesome-tab-ace-state nil
   "Whether current buffer is doing `awesome-tab-ace-jump' or not.")
 
@@ -848,9 +858,9 @@ influence of C1 on the result."
   (let* ((bg-mode (frame-parameter nil 'background-mode)))
     (if (display-graphic-p)
         (cond ((eq bg-mode 'dark)
-               (awesome-tab-color-blend (face-background 'default) "#000000" 0.8))
+               (awesome-tab-color-blend (face-background 'default) "#000000" awesome-tab-dark-unselected-blend))
               ((eq bg-mode 'light)
-               (awesome-tab-color-blend (face-background 'default) "#000000" 0.9)))
+               (awesome-tab-color-blend (face-background 'default) "#000000" awesome-tab-light-unselected-blend)))
       (cond ((eq bg-mode 'dark) awesome-tab-terminal-dark-unselect-background-color)
             ((eq bg-mode 'light) awesome-tab-terminal-light-unselect-background-color))
       )))
