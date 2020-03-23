@@ -1256,10 +1256,10 @@ That is, a string used to represent it on the tab bar."
      " " 'display
      (let ((data (make-list height (make-list width 1)))
            (color (pcase (frame-parameter nil 'background-mode)
-                    ('dark (or awesome-tab-dark-active-bar-color)
-                           (face-background 'highlight))
-                    ('light (or awesome-tab-light-active-bar-color)
-                            (face-background 'highlight)))))
+                    ('dark (or awesome-tab-dark-active-bar-color
+                               (face-background 'highlight)))
+                    ('light (or awesome-tab-light-active-bar-color
+                                (face-background 'highlight))))))
        (ignore-errors
          (create-image
           (concat
