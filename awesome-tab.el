@@ -383,6 +383,26 @@ It will render top-line on tab when you set this variable bigger than 0.9."
   :group 'awesome-tab
   :type 'string)
 
+(defcustom awesome-tab-dark-selected-foreground-color nil
+  "Foreground for selected tab in dark theme."
+  :group 'awesome-tab
+  :type '(choice (const nil) string))
+
+(defcustom awesome-tab-dark-unselected-foreground-color nil
+  "Foreground for unselected tab in dark theme."
+  :group 'awesome-tab
+  :type '(choice (const nil) string))
+
+(defcustom awesome-tab-light-selected-foreground-color nil
+  "Foreground for selected tab in light theme."
+  :group 'awesome-tab
+  :type '(choice (const nil) string))
+
+(defcustom awesome-tab-light-unselected-foreground-color nil
+  "Foreground for unselected tab in light theme."
+  :group 'awesome-tab
+  :type '(choice (const nil) string))
+
 (defcustom awesome-tab-terminal-dark-select-background-color "#222222"
   "Select background color for terminal dark mode."
   :group 'awesome-tab
@@ -434,12 +454,14 @@ It will render top-line on tab when you set this variable bigger than 0.9."
   :type '(choice (const nil) string))
 
 (defcustom awesome-tab-dark-unselected-blend 0.8
-  "The blend value for unselected background of dark mode"
+  "The blend value for unselected background of dark mode.
+Lower value means more contrast."
   :group 'awesome-tab
   :type 'float)
 
 (defcustom awesome-tab-light-unselected-blend 0.9
-  "The blend value for unselected background of light mode"
+  "The blend value for unselected background of light mode.
+Lower value means more contrast."
   :group 'awesome-tab
   :type 'float)
 
@@ -846,7 +868,10 @@ influence of C1 on the result."
 (defun awesome-tab-get-select-foreground-color ()
   (let ((bg-mode (frame-parameter nil 'background-mode)))
     (if (display-graphic-p)
-        (face-foreground 'font-lock-doc-face)
+        (cond ((eq bg-mode 'dark) (or awesome-tab-dark-selected-foreground-color
+                                      (face-foreground 'font-lock-doc-face)))
+              ((eq bg-mode 'light) (or awesome-tab-light-selected-foreground-color
+                                       (face-foreground 'font-lock-doc-face))))
       (cond ((eq bg-mode 'dark) awesome-tab-terminal-dark-select-foreground-color)
             ((eq bg-mode 'light) awesome-tab-terminal-light-select-foreground-color))
       )))
@@ -854,7 +879,10 @@ influence of C1 on the result."
 (defun awesome-tab-get-unselect-foreground-color ()
   (let ((bg-mode (frame-parameter nil 'background-mode)))
     (if (display-graphic-p)
-        (face-foreground 'font-lock-comment-face)
+        (cond ((eq bg-mode 'dark) (or awesome-tab-dark-unselected-foreground-color
+                                      (face-foreground 'font-lock-comment-face)))
+              ((eq bg-mode 'light) (or awesome-tab-light-unselected-foreground-color
+                                       (face-foreground 'font-lock-comment-face))))
       (cond ((eq bg-mode 'dark) awesome-tab-terminal-dark-unselect-foreground-color)
             ((eq bg-mode 'light) awesome-tab-terminal-light-unselect-foreground-color))
       )))
