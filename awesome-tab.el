@@ -826,9 +826,11 @@ influence of C1 on the result."
 
     (set-face-attribute 'awesome-tab-selected-face nil
                         :foreground (awesome-tab-get-select-foreground-color)
+                        :distant-foreground (awesome-tab-get-select-foreground-color)
                         :background select-tab-background)
     (set-face-attribute 'awesome-tab-unselected-face nil
                         :foreground (awesome-tab-get-unselect-foreground-color)
+                        :distant-foreground (awesome-tab-get-unselect-foreground-color)
                         :background unselect-tab-background)
 
     (set-face-attribute 'awesome-tab-selected-ace-face nil
@@ -928,7 +930,8 @@ influence of C1 on the result."
      (list (nreverse elts)
            (propertize "%-"
                        'face (list :background header-line-color
-                                   :foreground header-line-color)
+                                   :foreground header-line-color
+                                   :distant-foreground header-line-color)
                        'pointer 'arrow)))))
 
 (defun awesome-tab-line ()
