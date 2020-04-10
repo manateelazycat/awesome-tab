@@ -6,8 +6,8 @@
 ;; Maintainer: Andy Stewart <lazycat.manatee@gmail.com>
 ;; Copyright (C) 2018, Andy Stewart, all rights reserved.
 ;; Created: 2018-09-17 22:14:34
-;; Version: 7.2
-;; Last-Updated: 2020-03-22 22:43:20
+;; Version: 7.3
+;; Last-Updated: 2020-04-10 12:36:52
 ;;           By: Andy Stewart
 ;; URL: http://www.emacswiki.org/emacs/download/awesome-tab.el
 ;; Keywords:
@@ -89,6 +89,9 @@
 ;;
 
 ;;; Change log:
+;;
+;; 2020/04/10
+;;      * Fix issue #81
 ;;
 ;; 2020/03/22
 ;;      * Support EAF mode.
@@ -1659,9 +1662,14 @@ not the actual logical index position of the current group."
   (interactive)
   (let* ((event last-command-event)
          (key (make-vector 1 event))
-         (key-desc (key-description key)))
-    (awesome-tab-select-visible-nth-tab
-     (string-to-number (nth 1 (split-string key-desc "-"))))))
+         (key-desc (key-description key))
+         (tab-index (string-to-number
+                     ;; Fix issue #81 that `last-command-event' is not keystroke.
+                     (cond ((equal (length key-desc) 1)
+                            key-desc)
+                           (t
+                            (nth 1 (split-string key-desc "-")))))))
+    (awesome-tab-select-visible-nth-tab tab-index)))
 
 (defun awesome-tab-build-ace-strs (len key-number seqs)
   "Build strings for `awesome-tab-ace-jump'.
