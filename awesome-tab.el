@@ -1263,9 +1263,10 @@ That is, a string used to represent it on the tab bar."
      ;; Ace string.
      (when (and ace-state (eq awesome-tab-ace-str-style 'left))
        (propertize ace-str 'face ace-str-face))
-     ;; Left margin.
-     (propertize " " 'face tab-face)
      ;; Tab icon.
+     (when (and awesome-tab-display-icon
+                awesome-tab-all-the-icons-is-load-p)
+       (propertize " " 'face tab-face))
      (if (and ace-state (eq awesome-tab-ace-str-style 'replace-icon))
          (propertize ace-str 'face ace-str-face)
        (awesome-tab-icon-for-tab tab tab-face))
