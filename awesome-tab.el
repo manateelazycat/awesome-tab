@@ -932,23 +932,24 @@ influence of C1 on the result."
       ;; At this point the selected tab is the last elt in ELTS.
       ;; Scroll TABSET and ELTS until the selected tab becomes
       ;; visible.
-      (with-temp-buffer
-        (let ((truncate-partial-width-windows nil)
-              (inhibit-modification-hooks t)
-              deactivate-mark ;; Prevent deactivation of the mark!
-              start)
-          (setq truncate-lines nil
-                buffer-undo-list t)
-          (setq start (point))
-          (while (and (cdr elts) ;; Always show the selected tab!
-                      (progn
-                        (delete-region start (point-max))
-                        (goto-char (point-max))
-                        (apply 'insert elts)
-                        (goto-char (point-min))
-                        (> (vertical-motion 1) 0)))
-            (awesome-tab-scroll tabset 1)
-            (setq elts (cdr elts)))))
+      (let (buffer-list-update-hook)
+        (with-temp-buffer
+          (let ((truncate-partial-width-windows nil)
+                (inhibit-modification-hooks t)
+                deactivate-mark ;; Prevent deactivation of the mark!
+                start)
+            (setq truncate-lines nil
+                  buffer-undo-list t)
+            (setq start (point))
+            (while (and (cdr elts) ;; Always show the selected tab!
+                        (progn
+                          (delete-region start (point-max))
+                          (goto-char (point-max))
+                          (apply 'insert elts)
+                          (goto-char (point-min))
+                          (> (vertical-motion 1) 0)))
+              (awesome-tab-scroll tabset 1)
+              (setq elts (cdr elts))))))
       (setq elts (nreverse elts))
       (setq awesome-tab--track-selected nil))
     ;; Format remaining tabs.
