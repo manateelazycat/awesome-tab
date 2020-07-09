@@ -49,7 +49,7 @@ git clone --depth=1 https://github.com/manateelazycat/awesome-tab.git
 (awesome-tab-mode t)
 ```
 
-2. If you are using [Use-packge](https://github.com/jwiegley/use-package), the configuration will look like this
+2. If you are using [Use-package](https://github.com/jwiegley/use-package), the configuration will look like this
 
 ```ELisp
 (use-package awesome-tab
