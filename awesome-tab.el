@@ -521,6 +521,16 @@ group.  Notice that it is better that a buffer belongs to one group.")
         #'(lambda () (force-window-update (selected-window)))
       'force-mode-line-update)))
 
+(defmacro awesome-tab-kill-buffer-match-rule (match-rule)
+  `(save-excursion
+     (mapc #'(lambda (buffer)
+               (with-current-buffer buffer
+                 (when (string-equal current-group-name (cdr (awesome-tab-selected-tab (awesome-tab-current-tabset t))))
+                   (when (funcall ,match-rule buffer)
+                     (kill-buffer buffer))
+                   )))
+           (buffer-list))))
+
 ;; Copied from s.el
 (defun awesome-tab-truncate-string (len s &optional ellipsis)
   "If S is longer than LEN, cut it down and add ELLIPSIS to the end.
@@ -1771,16 +1781,6 @@ tabs. NKEYS should be 1 or 2."
                   )))
           (buffer-list))
     extension-names))
-
-(defmacro awesome-tab-kill-buffer-match-rule (match-rule)
-  `(save-excursion
-     (mapc #'(lambda (buffer)
-               (with-current-buffer buffer
-                 (when (string-equal current-group-name (cdr (awesome-tab-selected-tab (awesome-tab-current-tabset t))))
-                   (when (funcall ,match-rule buffer)
-                     (kill-buffer buffer))
-                   )))
-           (buffer-list))))
 
 ;;;;;;;;;;;;;;;;;;;;;;; Default configurations ;;;;;;;;;;;;;;;;;;;;;;;
 
