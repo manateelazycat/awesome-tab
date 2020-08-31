@@ -582,6 +582,10 @@ TABSET is the tab set the tab belongs to."
   "Hook run after tab bar data has been initialized.
 You should use this hook to initialize dependent data.")
 
+(defvar awesome-tab-ace-jump-hook nil
+  "Hook run before ace jump active.
+You should use this hook to change input method state.")
+
 (defvar awesome-tab-active-bar nil)
 
 (defsubst awesome-tab-init-tabsets-store ()
@@ -1732,6 +1736,7 @@ tabs. NKEYS should be 1 or 2."
            (ace-strs (awesome-tab-build-ace-strs visible-tabs-length key-number visible-seqs)))
       (setq awesome-tab-ace-state t)
       (awesome-tab-refresh-display)
+      (run-hooks 'awesome-tab-ace-jump-hook)
       (dotimes (i key-number)
         (while (not done-flag)
           (let ((char (with-local-quit (read-key (format "Awesome Tab Ace Jump (%d):" (1+ i))))))
