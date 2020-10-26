@@ -1898,9 +1898,10 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
      ;; Buffer name not match below blacklist.
      (string-prefix-p "*epc" name)
      (string-prefix-p "*helm" name)
-     (string-prefix-p "*Compile-Log*" name)
      (string-prefix-p "*lsp" name)
-     (string-prefix-p "*flycheck" name)
+     (and (eq awesome-tab-display-line 'header-line)
+          (or (string-prefix-p "*Compile-Log*" name)
+              (string-prefix-p "*Flycheck" name)))
 
      ;; Is not magit buffer.
      (and (string-prefix-p "magit" name)
