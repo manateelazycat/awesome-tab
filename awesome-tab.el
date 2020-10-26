@@ -478,6 +478,15 @@ Lower value means more contrast."
   :group 'awesome-tab
   :type 'integer)
 
+(defcustom awesome-tab-display-line
+  (if (version< emacs-version "27.0")
+      'header-line 'tab-line)
+  "The place to display awesome-tab.
+Either `header-line', or `tab-line' for Emacs 27 or above."
+  :group 'awesome-tab
+  :type '(choice (const header-line)
+                 (const tab-line)))
+
 (defvar-local awesome-tab-ace-state nil
   "Whether current buffer is doing `awesome-tab-ace-jump' or not.")
 
@@ -835,7 +844,7 @@ customize the background will not have any effect."
 ;;
 (defun awesome-tab-make-header-line-mouse-map (mouse function)
   (let ((map (make-sparse-keymap)))
-    (define-key map (vector 'header-line mouse) function)
+    (define-key map (vector awesome-tab-display-line mouse) function)
     map))
 
 (defun awesome-tab-color-blend (c1 c2 alpha)
@@ -861,7 +870,7 @@ influence of C1 on the result."
     (when (display-graphic-p)
       (setq awesome-tab-active-bar (awesome-tab-make-xpm awesome-tab-active-bar-width awesome-tab-active-bar-height)))
 
-    (set-face-attribute 'header-line nil :height awesome-tab-height)
+    (set-face-attribute awesome-tab-display-line nil :height awesome-tab-height)
 
     (set-face-attribute 'awesome-tab-selected-face nil
                         :foreground (awesome-tab-get-select-foreground-color)
@@ -986,7 +995,7 @@ Inhibit display of the tab bar in current window `awesome-tab-hide-tab-function'
   (cond
    ((awesome-tab-hide-tab-cached (current-buffer))
     ;; Don't show the tab bar.
-    (setq header-line-format nil))
+    (set (awesome-tab-display-line-format) nil))
    ((awesome-tab-current-tabset t)
     ;; When available, use a cached tab bar value, else recompute it.
     (or (awesome-tab-template awesome-tab-current-tabset)
@@ -1097,7 +1106,7 @@ Depend on the setting of the option `awesome-tab-cycle-scope'."
 ;;
 (defsubst awesome-tab-mode-on-p ()
   "Return non-nil if Awesome-Tab mode is on."
-  (eq (default-value 'header-line-format)
+  (eq (default-value (awesome-tab-display-line-format))
       awesome-tab-header-line-format))
 
 ;;; Awesome-Tab mode
@@ -1124,13 +1133,13 @@ Returns non-nil if the new state is enabled.
 ;;; ON
       (unless (awesome-tab-mode-on-p)
         ;; Save current default value of `header-line-format'.
-        (setq awesome-tab--global-hlf (default-value 'header-line-format))
+        (setq awesome-tab--global-hlf (default-value (awesome-tab-display-line-format)))
         (awesome-tab-init-tabsets-store)
-        (setq-default header-line-format awesome-tab-header-line-format))
+        (set-default (awesome-tab-display-line-format) awesome-tab-header-line-format))
 ;;; OFF
     (when (awesome-tab-mode-on-p)
       ;; Restore previous `header-line-format'.
-      (setq-default header-line-format awesome-tab--global-hlf)
+      (set-default (awesome-tab-display-line-format) awesome-tab--global-hlf)
       (awesome-tab-free-tabsets-store))
     ))
 
@@ -1424,7 +1433,7 @@ after the current buffer has been killed.  Try first the buffer in tab
 after the current one, then the buffer in tab before.  On success, put
 the sibling buffer in front of the buffer list, so it will be selected
 first."
-  (and (eq header-line-format awesome-tab-header-line-format)
+  (and (eq (eval (awesome-tab-display-line-format)) awesome-tab-header-line-format)
        (eq awesome-tab-current-tabset-function 'awesome-tab-buffer-tabs)
        (eq (current-buffer) (window-buffer (selected-window)))
        (let ((bl (awesome-tab-tab-values (awesome-tab-current-tabset)))
@@ -1767,6 +1776,14 @@ tabs. NKEYS should be 1 or 2."
       (awesome-tab-buffer-select-tab (nth lower-bound visible-tabs)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;; Utils functions ;;;;;;;;;;;;;;;;;;;;;;;
+(defun awesome-tab-display-line-format ()
+  "Return the line-format to be used.
+This is based on `awesome-tab-display-line'."
+  (pcase awesome-tab-display-line
+    ('header-line 'header-line-format)
+    ('tab-line 'tab-line-format)
+    (_ (error "Invalid value of `awesome-tab-display-line'."))))
+
 (defun awesome-tab-get-groups ()
   ;; Refresh groups.
   (set awesome-tab-tabsets-tabset (awesome-tab-map-tabsets 'awesome-tab-selected-tab))
