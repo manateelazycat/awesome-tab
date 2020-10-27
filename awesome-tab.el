@@ -1892,20 +1892,16 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
 (defun awesome-tab-hide-tab (x)
   (let ((name (format "%s" x)))
     (or
-     ;; Current window is not dedicated window.
+     ;; Hide tab if current window is not dedicated window.
      (window-dedicated-p (selected-window))
 
-     ;; Buffer name not match below blacklist.
-     (string-prefix-p "*epc" name)
+     ;; Hide tab if current buffer is helm buffer.
      (string-prefix-p "*helm" name)
-     (string-prefix-p "*lsp" name)
+
+     ;; Hide blacklist if emacs version < 27 (use header-line).
      (and (eq awesome-tab-display-line 'header-line)
           (or (string-prefix-p "*Compile-Log*" name)
               (string-prefix-p "*Flycheck" name)))
-
-     ;; Is not magit buffer.
-     (and (string-prefix-p "magit" name)
-          (not (file-name-extension name)))
      )))
 
 (defun awesome-tab-hide-tab-cached (buf)
