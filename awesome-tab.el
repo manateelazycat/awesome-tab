@@ -493,14 +493,9 @@ Either `header-line', or `tab-line' for Emacs 27 or above."
                  (const tab-line)))
 
 ;; Clear tab-line's color settings.
-(when (version<= "27.0" emacs-version)
-  (set-face-attribute 'tab-line nil
-                      :inherit 'default
-                      :foreground 'unspecified)
-
-  (face-spec-set awesome-tab-display-line
-                 '((t :inherit 'default))
-                 'face-defface-spec))
+(face-spec-set awesome-tab-display-line
+               '((t :inherit 'default))
+               'face-defface-spec)
 
 (defvar-local awesome-tab-ace-state nil
   "Whether current buffer is doing `awesome-tab-ace-jump' or not.")
