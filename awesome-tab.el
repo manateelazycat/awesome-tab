@@ -270,7 +270,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;; Awesome-Tab source code ;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Make tab-line inherit default font.
-(set-face-attribute 'tab-line nil :inherit 'default)
+(when (version<= "27.0" emacs-version)
+  (set-face-attribute 'tab-line nil :inherit 'default))
 
 (defgroup awesome-tab nil
   "Display a tab bar in the header line."
