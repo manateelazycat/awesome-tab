@@ -360,7 +360,7 @@ Set this option with nil if you don't like icon in tab."
           (const :tag "Left" left)
           (const :tag "Right" right)))
 
-(defcustom awesome-tab-height 190
+(defcustom awesome-tab-height 150
   "The height of tab face."
   :group 'awesome-tab
   :type 'int)
