@@ -365,12 +365,17 @@ Set this option with nil if you don't like icon in tab."
   :group 'awesome-tab
   :type 'int)
 
-(defcustom awesome-tab-icon-v-adjust 0
-  "The v-adjust of tab icon."
+(defcustom awesome-tab-icon-file-v-adjust -0.1
+  "The v-adjust of tab icon for file."
   :group 'awesome-tab
   :type 'float)
 
-(defcustom awesome-tab-icon-height 0.6
+(defcustom awesome-tab-icon-mode-v-adjust 0
+  "The v-adjust of tab icon for mode."
+  :group 'awesome-tab
+  :type 'float)
+
+(defcustom awesome-tab-icon-height 0.8
   "The height of icon.
 It will render top-line on tab when you set this variable bigger than 0.9."
   :group 'awesome-tab
@@ -1376,13 +1381,13 @@ Otherwise use `all-the-icons-icon-for-buffer' to fetch icon for buffer."
              ((and
                tab-file
                (file-exists-p tab-file))
-              (all-the-icons-icon-for-file tab-file :v-adjust awesome-tab-icon-v-adjust :height awesome-tab-icon-height))
+              (all-the-icons-icon-for-file tab-file :v-adjust awesome-tab-icon-file-v-adjust :height awesome-tab-icon-height))
              ;; Use `all-the-icons-icon-for-mode' for current tab buffer at last.
              (t
               (with-current-buffer tab-buffer
                 (if (derived-mode-p tab-buffer 'eaf-mode)
-                    (all-the-icons-faicon "html5"  :v-adjust awesome-tab-icon-v-adjust :height awesome-tab-icon-height)
-                  (all-the-icons-icon-for-mode major-mode :v-adjust awesome-tab-icon-v-adjust :height awesome-tab-icon-height))
+                    (all-the-icons-faicon "html5"  :v-adjust awesome-tab-icon-mode-v-adjust :height awesome-tab-icon-height)
+                  (all-the-icons-icon-for-mode major-mode :v-adjust awesome-tab-icon-mode-v-adjust :height awesome-tab-icon-height))
                 )))))
       (when (and icon
                  ;; `get-text-property' need icon is string type.
