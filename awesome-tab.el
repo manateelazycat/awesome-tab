@@ -15,7 +15,7 @@
 ;;
 ;; Features that might be required by this library:
 ;;
-;; `cl-lib' `color' `which-func'
+;; `cl-lib' `color' `which-func' `subr-x'
 ;;
 
 ;;; This file is NOT part of GNU Emacs
@@ -265,6 +265,7 @@
 ;;; Require
 (require 'cl-lib)
 (require 'color)
+(require 'subr-x)
 
 ;;; Code:
 ;;;;;;;;;;;;;;;;;;;;;;; Awesome-Tab source code ;;;;;;;;;;;;;;;;;;;;;;;
