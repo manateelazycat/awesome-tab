@@ -1908,6 +1908,9 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
      ;; Hide tab if current buffer is helm buffer.
      (string-prefix-p "*helm" name)
 
+     ;; Hide tab if current buffer is flycheck buffer.
+     (string-prefix-p "*flycheck" name)
+
      ;; Hide blacklist if emacs version < 27 (use header-line).
      (and (eq awesome-tab-display-line 'header-line)
           (or (string-prefix-p "*Compile-Log*" name)
