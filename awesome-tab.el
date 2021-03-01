@@ -1906,6 +1906,9 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
      ;; Hide tab if current window is not dedicated window.
      (window-dedicated-p (selected-window))
 
+     ;; Hide sdcv tab.
+     (string-prefix-p "*sdcv" name)
+
      ;; Hide tab if current buffer is helm buffer.
      (string-prefix-p "*helm" name)
 
