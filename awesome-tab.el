@@ -1427,7 +1427,7 @@ Currently, this function is only use for option `awesome-tab-display-sticky-func
               ))))
       (setq awesome-tab-last-scroll-y scroll-y))))
 
-(add-hook 'post-command-hook 'awesome-tab-monitor-window-scroll)
+(add-hook 'post-command-hook #'awesome-tab-monitor-window-scroll)
 
 (defun awesome-tab-buffer-select-tab (tab)
   "Select tab."
@@ -1471,7 +1471,7 @@ Run as `awesome-tab-init-hook'."
         awesome-tab-current-tabset-function 'awesome-tab-buffer-tabs
         awesome-tab-select-tab-function 'awesome-tab-buffer-select-tab
         )
-  (add-hook 'kill-buffer-hook 'awesome-tab-buffer-track-killed))
+  (add-hook 'kill-buffer-hook #'awesome-tab-buffer-track-killed))
 
 (defun awesome-tab-buffer-quit ()
   "Quit tab bar buffer.
@@ -1481,10 +1481,10 @@ Run as `awesome-tab-quit-hook'."
         awesome-tab-current-tabset-function nil
         awesome-tab-select-tab-function nil
         )
-  (remove-hook 'kill-buffer-hook 'awesome-tab-buffer-track-killed))
+  (remove-hook 'kill-buffer-hook #'awesome-tab-buffer-track-killed))
 
-(add-hook 'awesome-tab-init-hook 'awesome-tab-buffer-init)
-(add-hook 'awesome-tab-quit-hook 'awesome-tab-buffer-quit)
+(add-hook 'awesome-tab-init-hook #'awesome-tab-buffer-init)
+(add-hook 'awesome-tab-quit-hook #'awesome-tab-buffer-quit)
 
 ;;;;;;;;;;;;;;;;;;;;;;; Interactive functions ;;;;;;;;;;;;;;;;;;;;;;;
 (defun awesome-tab-switch-group (&optional groupname)
@@ -1823,7 +1823,7 @@ This is based on `awesome-tab-display-line'."
 (setq uniquify-after-kill-buffer-p t)
 
 (dolist (hook awesometab-hide-tabs-hooks)
-  (add-hook hook '(lambda () (setq-local header-line-format nil))))
+  (add-hook hook #'(lambda () (setq-local header-line-format nil))))
 
 ;; Rules to control buffer's group rules.
 (defvar awesome-tab-groups-hash (make-hash-table :test 'equal))
