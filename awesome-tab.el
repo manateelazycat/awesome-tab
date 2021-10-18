@@ -1885,9 +1885,9 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
   (interactive)
   (setq helm-source-awesome-tab-group
         (when (ignore-errors (require 'helm))
-          (helm-build-sync-source "Awesome-Tab Group"
-                                  :candidates #'awesome-tab-get-groups
-                                  :action '(("Switch to group" . awesome-tab-switch-group))))))
+          (helm-make-source "Awesome-Tab Group" 'helm-source-sync
+            :candidates #'awesome-tab-get-groups
+            :action '(("Switch to group" . awesome-tab-switch-group))))))
 
 ;;;###autoload
 (defun awesome-tab-counsel-switch-group ()
