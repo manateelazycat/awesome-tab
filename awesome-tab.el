@@ -1838,6 +1838,8 @@ This is based on `awesome-tab-display-line'."
 (defun awesome-tab-get-project-name ()
   (let ((project (project-current)))
     (when project
+      (setq project (cdr project))
+
       (when (listp project)
         (setq project (nth (- (length project) 1) project)))
 
