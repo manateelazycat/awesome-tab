@@ -1830,9 +1830,12 @@ This is based on `awesome-tab-display-line'."
 (defvar awesome-tab-hide-hash (make-hash-table :test 'equal))
 
 (defun awesome-tab-project-name ()
-  (let ((project-name (awesome-tab-get-project-name)))
+  (let ((project-name (project-current)))
     (if project-name
-        (format "Project: %s" project-name)
+        (progn
+          (if (listp project-name)
+              (setq project-name (nth (- (length project-name) 1) project-name)))
+          (format "Project: %s" (expand-file-name project-name)))
       awesome-tab-common-group-name)))
 
 (defun awesome-tab-get-project-name ()
