@@ -1830,10 +1830,24 @@ This is based on `awesome-tab-display-line'."
 (defvar awesome-tab-hide-hash (make-hash-table :test 'equal))
 
 (defun awesome-tab-project-name ()
-  (let ((project-name (cdr (project-current))))
+  (let ((project-name (awesome-tab-get-project-name)))
     (if project-name
-        (format "Project: %s" (expand-file-name project-name))
+        (format "Project: %s" project-name)
       awesome-tab-common-group-name)))
+
+(defun awesome-tab-get-project-name ()
+  (let ((project (project-current)))
+    (if project
+        (cond
+         ;; 27 <= <= 28
+         ((and
+           (version< "27" emacs-version)
+           (version< emacs-version "29"))
+          (expand-file-name (cdr project)))
+         ;; >= 29
+         ((version<= "29" emacs-version)
+          (expand-file-name (car (last project))))
+         (t nil)))))
 
 (defun awesome-tab-get-group-name (buf)
   (let ((group-name (gethash buf awesome-tab-groups-hash)))
@@ -1886,8 +1900,8 @@ Other buffer group by `awesome-tab-get-group-name' with project name."
   (setq helm-source-awesome-tab-group
         (when (ignore-errors (require 'helm))
           (helm-make-source "Awesome-Tab Group" 'helm-source-sync
-            :candidates #'awesome-tab-get-groups
-            :action '(("Switch to group" . awesome-tab-switch-group))))))
+                            :candidates #'awesome-tab-get-groups
+                            :action '(("Switch to group" . awesome-tab-switch-group))))))
 
 ;;;###autoload
 (defun awesome-tab-counsel-switch-group ()
