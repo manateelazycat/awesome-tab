@@ -1837,7 +1837,6 @@ This is based on `awesome-tab-display-line'."
               (setq project-name (nth (- (length project-name) 1) project-name)))
           (format "Project: %s" (expand-file-name project-name)))
       awesome-tab-common-group-name)))
-  
 
 (defun awesome-tab-get-group-name (buf)
   (let ((group-name (gethash buf awesome-tab-groups-hash)))
