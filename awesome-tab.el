@@ -906,9 +906,9 @@ influence of C1 on the result."
   (let ((bg-mode (frame-parameter nil 'background-mode)))
     (if (display-graphic-p)
         (cond ((eq bg-mode 'dark) (or awesome-tab-dark-selected-foreground-color
-                                      (face-foreground 'font-lock-doc-face)))
+                                      (face-foreground 'font-lock-doc-face nil 'default)))
               ((eq bg-mode 'light) (or awesome-tab-light-selected-foreground-color
-                                       (face-foreground 'font-lock-doc-face))))
+                                       (face-foreground 'font-lock-doc-face nil 'default))))
       (cond ((eq bg-mode 'dark) awesome-tab-terminal-dark-select-foreground-color)
             ((eq bg-mode 'light) awesome-tab-terminal-light-select-foreground-color))
       )))
@@ -917,9 +917,9 @@ influence of C1 on the result."
   (let ((bg-mode (frame-parameter nil 'background-mode)))
     (if (display-graphic-p)
         (cond ((eq bg-mode 'dark) (or awesome-tab-dark-unselected-foreground-color
-                                      (face-foreground 'font-lock-comment-face)))
+                                      (face-foreground 'font-lock-comment-face nil 'default)))
               ((eq bg-mode 'light) (or awesome-tab-light-unselected-foreground-color
-                                       (face-foreground 'font-lock-comment-face))))
+                                       (face-foreground 'font-lock-comment-face nil 'default))))
       (cond ((eq bg-mode 'dark) awesome-tab-terminal-dark-unselect-foreground-color)
             ((eq bg-mode 'light) awesome-tab-terminal-light-unselect-foreground-color))
       )))
